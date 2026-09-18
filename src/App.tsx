@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StoreProvider } from './context/StoreContext';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
+import { MobileBottomNav } from './components/common/MobileBottomNav';
 import { CartDrawer } from './components/storefront/CartDrawer';
 import { ProductDetailsModal } from './components/storefront/ProductDetailsModal';
 import { OfflineBanner } from './components/common/OfflineBanner';
@@ -86,7 +87,7 @@ export default function App() {
         />
 
         {/* Dynamic Route View */}
-        <main className="flex-1">
+        <main className="flex-1 pb-16 lg:pb-0">
           {/* Fallback to HomePage if route doesn't match any known page */}
           {(routeInfo.path === '#/' ||
             (routeInfo.path !== '#/shop' &&
@@ -193,6 +194,13 @@ export default function App() {
             setSelectedProduct(null);
             setIsCartOpen(true);
           }}
+        />
+
+        {/* Floating Mobile Bottom Navigation Bar */}
+        <MobileBottomNav
+          currentRoute={currentRoute}
+          onNavigate={navigateTo}
+          onOpenCart={() => setIsCartOpen(true)}
         />
 
       </div>

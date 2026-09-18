@@ -31,6 +31,8 @@ import {
   isFirebaseConfigured
 } from '../lib/firebase';
 import {
+  INITIAL_PRODUCTS,
+  INITIAL_CATEGORIES,
   INITIAL_SITE_SETTINGS,
   INITIAL_PAYMENT_SETTINGS,
   INITIAL_DELIVERY_SETTINGS,
@@ -113,10 +115,10 @@ const LS_MGR_PASS = 'pioneer_mgr_pass_hash';
 const LS_DEV_PASS = 'pioneer_dev_pass_hash';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Settings States
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);

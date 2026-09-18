@@ -108,19 +108,20 @@ export default function App() {
 
           {routeInfo.path === '#/shop' && (
             <ShopPage
+              key={`shop-${routeInfo.category || 'all'}-${routeInfo.filter || 'all'}-${globalSearchQuery}`}
               initialCategory={
                 routeInfo.category === 'traditional'
                   ? 'Kashmiri Pherans & Traditional'
                   : routeInfo.category === 'shawls'
-                  ? 'Pure Wool Shawls'
+                  ? 'Shawls & Stoles'
                   : routeInfo.category === 'mens'
-                  ? "Men's Formal Suits & Shirts"
+                  ? "Men's Wear"
                   : routeInfo.category === 'womens'
                   ? "Women's Collection"
                   : routeInfo.category === 'jackets'
-                  ? 'Jackets & Heavy Coats'
+                  ? 'Jackets & Winter Wear'
                   : routeInfo.category === 'kids'
-                  ? 'Kids Winter Wear'
+                  ? 'Kids Wear'
                   : routeInfo.category
               }
               initialQuery={globalSearchQuery}

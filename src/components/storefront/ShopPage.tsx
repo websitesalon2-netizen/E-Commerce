@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Filter, 
   Search, 
@@ -39,6 +39,15 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   const [onlyInStock, setOnlyInStock] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<number>(10000);
   const [mobileFilterOpen, setMobileFilterOpen] = useState<boolean>(false);
+
+  // Sync state whenever props change from route navigation
+  useEffect(() => {
+    setSelectedCategory(initialCategory || 'all');
+  }, [initialCategory]);
+
+  useEffect(() => {
+    setSearchQuery(initialQuery);
+  }, [initialQuery]);
 
   // Extract all available sizes and colors from products catalog
   const allSizes = useMemo(() => {

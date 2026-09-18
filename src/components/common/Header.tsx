@@ -158,14 +158,14 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-stone-700">
+        <nav className="hidden xl:flex items-center gap-5 text-sm font-medium text-stone-700">
           {navLinks.map((link) => {
-            const isActive = currentRoute === link.route || (link.route !== '#/' && currentRoute.startsWith(link.route));
+            const isActive = currentRoute === link.route;
             return (
               <button
                 key={link.route}
                 onClick={() => onNavigate(link.route)}
-                className={`py-1 transition-colors cursor-pointer relative ${
+                className={`py-1 whitespace-nowrap transition-colors cursor-pointer relative ${
                   isActive 
                     ? 'text-amber-900 font-semibold' 
                     : 'text-stone-600 hover:text-stone-900'
@@ -249,7 +249,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="mobile-menu-toggle-btn"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open Navigation Menu"
-            className="lg:hidden p-2 text-stone-700 hover:bg-stone-100 rounded-lg transition cursor-pointer active:scale-95"
+            className="xl:hidden p-2 text-stone-700 hover:bg-stone-100 rounded-lg transition cursor-pointer active:scale-95"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -294,7 +294,7 @@ export const Header: React.FC<HeaderProps> = ({
       {mobileMenuOpen && typeof document !== 'undefined' && createPortal(
         <div 
           id="mobile-menu-overlay" 
-          className="lg:hidden fixed inset-0 z-[9999] bg-stone-950/70 backdrop-blur-xs flex justify-start mobile-overlay-animate"
+          className="xl:hidden fixed inset-0 z-[9999] bg-stone-950/70 backdrop-blur-xs flex justify-start mobile-overlay-animate"
           onClick={(e) => {
             if (e.target === e.currentTarget) setMobileMenuOpen(false);
           }}
@@ -351,7 +351,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </p>
                 {navLinks.map((link) => {
                   const Icon = link.icon;
-                  const isActive = currentRoute === link.route || (link.route !== '#/' && currentRoute.startsWith(link.route));
+                  const isActive = currentRoute === link.route;
                   return (
                     <button
                       key={link.route}

@@ -643,7 +643,7 @@ export const ManagerDesk: React.FC = () => {
                     <th className="px-4 py-3">Total (INR)</th>
                     <th className="px-4 py-3">Payment</th>
                     <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">View</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100">
@@ -689,12 +689,61 @@ export const ManagerDesk: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <button
-                            onClick={() => setSelectedOrder(order)}
-                            className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-md font-semibold text-[11px] transition cursor-pointer"
-                          >
-                            Details
-                          </button>
+                         <div className="flex items-center justify-end gap-2">
+                           <button
+                             onClick={() => setSelectedOrder(order)}
+                             className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-md font-semibold text-[11px] transition cursor-pointer"
+                           >
+                             Details
+                            </button>
+
+                            <button
+                              onClick={() => {
+                              setConfirmModal({
+                                 isOpen: true,
+                                 title: 'Delete Order',
+                                 message: `Are you sure you want to permanently delete order ${order.orderNumber}? This action cannot be undone.`,
+                                 onConfirm: async () => {
+                                    try {
+                                      await deleteOrder(order.id);
+
+                                      // Close the confirmation modal
+                                      setConfirmModal(prev => ({
+                                        ...prev,
+                                        isOpen: false
+                                      }));
+
+                                      // Close order details if this order is currently open
+                                      setSelectedOrder(prev =>
+                                     prev?.id === order.id ? null : prev
+                                      );
+
+                                      setSettingsFeedback(
+                                        `Order ${order.orderNumber} deleted successfully.`
+                                      );
+
+                                     setTimeout(() => {
+                                        setSettingsFeedback(null);
+                                      }, 3500);
+                                    } catch (error) {
+                                      console.error('Failed to delete order:', error);
+ 
+                                     setConfirmModal(prev => ({
+                                        ...prev,
+                                        isOpen: false
+                                      }));
+
+                                      alert('Failed to delete the order. Please try again.');
+                                    }
+                                  },
+                                });
+                              }}
+                              className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded-md font-semibold text-[11px] transition cursor-pointer inline-flex items-center gap-1"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))

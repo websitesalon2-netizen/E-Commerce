@@ -1,23 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Pioneer Clothing House</title>
-    <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // Redirects 404 to index.html with route preserved in hash or search
-      var segmentCount = 0;
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
-        l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+    <script>
+      // Single Page Application fallback for GitHub Pages
+      // Redirects to base application path preserving current hash
+      var path = window.location.pathname;
+      var repo = path.split('/')[1] || '';
+      var target = repo ? '/' + repo + '/#' : '/#';
+      window.location.replace(target);
     </script>
   </head>
-  <body>
-    <p>Redirecting to Pioneer Clothing House...</p>
+  <body style="font-family: sans-serif; text-align: center; padding: 40px; background: #fafaf9; color: #1c1917;">
+    <h2>Loading Pioneer Clothing House...</h2>
+    <p><a href="./#/" style="color: #991b1b; text-decoration: underline;">Click here if you are not redirected automatically</a></p>
   </body>
 </html>

@@ -43,9 +43,24 @@ class ErrorBoundary extends Component<Props, State> {
           <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#881337', marginBottom: '8px' }}>
             Pioneer Clothing House — Pulwama
           </h1>
-          <p style={{ color: '#57534e', marginBottom: '20px', maxWidth: '480px', fontSize: '14px' }}>
-            The application encountered a temporary display issue while loading. Please refresh or reset to the homepage.
+          <p style={{ color: '#57534e', marginBottom: '16px', maxWidth: '480px', fontSize: '14px' }}>
+            The application encountered a temporary issue while loading. Please refresh or reset to the homepage.
           </p>
+          {this.state.error?.message && (
+            <div style={{
+              background: '#fef2f2',
+              color: '#991b1b',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              marginBottom: '16px',
+              maxWidth: '90vw',
+              overflowX: 'auto'
+            }}>
+              {this.state.error.message}
+            </div>
+          )}
           <button
             onClick={() => {
               window.location.hash = '#/';

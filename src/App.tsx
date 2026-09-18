@@ -19,16 +19,24 @@ import { Product } from './types';
 
 export default function App() {
   // Hash-based client routing
-  const [currentRoute, setCurrentRoute] = useState<string>(() => window.location.hash || '#/');
+  const [currentRoute, setCurrentRoute] = useState<string>(() => {
+    const h = window.location.hash;
+    return (h && h.startsWith('#/')) ? h : '#/';
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [confirmedOrderId, setConfirmedOrderId] = useState<string | null>(null);
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
 
   useEffect(() => {
+    // If no valid hash exists, set default hash without reloading
+    if (!window.location.hash || !window.location.hash.startsWith('#/')) {
+      window.location.hash = '#/';
+    }
+
     const handleHashChange = () => {
-      const hash = window.location.hash || '#/';
-      setCurrentRoute(hash);
+      const hash = window.location.hash;
+      setCurrentRoute((hash && hash.startsWith('#/')) ? hash : '#/');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -79,7 +87,17 @@ export default function App() {
 
         {/* Dynamic Route View */}
         <main className="flex-1">
-          {routeInfo.path === '#/' && (
+          {/* Fallback to HomePage if route doesn't match any known page */}
+          {(routeInfo.path === '#/' ||
+            (routeInfo.path !== '#/shop' &&
+             routeInfo.path !== '#/checkout' &&
+             routeInfo.path !== '#/order-confirmed' &&
+             routeInfo.path !== '#/policies' &&
+             routeInfo.path !== '#/about' &&
+             routeInfo.path !== '#/contact' &&
+             routeInfo.path !== '#/find-us' &&
+             routeInfo.path !== '#/manager' &&
+             routeInfo.path !== '#/developer')) && (
             <HomePage
               onNavigate={navigateTo}
               onSelectProduct={(p) => setSelectedProduct(p)}

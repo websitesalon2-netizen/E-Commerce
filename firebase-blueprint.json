@@ -1,0 +1,102 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Indian clothing product item in the Pioneer Clothing House catalog",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 3000 },
+        "category": { "type": "string", "maxLength": 60 },
+        "subcategory": { "type": "string", "maxLength": 60 },
+        "price": { "type": "number" },
+        "mrp": { "type": "number" },
+        "discount": { "type": "number" },
+        "stock": { "type": "number" },
+        "sku": { "type": "string", "maxLength": 50 },
+        "sizes": { "type": "array" },
+        "colors": { "type": "array" },
+        "tags": { "type": "array" },
+        "featured": { "type": "boolean" },
+        "newArrival": { "type": "boolean" },
+        "isAvailable": { "type": "boolean" },
+        "images": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "price", "category", "stock"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Apparel category",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 80 },
+        "slug": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 500 },
+        "image": { "type": "string" },
+        "order": { "type": "number" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["name", "slug"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order snapshot and delivery details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string", "maxLength": 50 },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "mobile": { "type": "string", "maxLength": 15 },
+        "whatsapp": { "type": "string", "maxLength": 15 },
+        "address": { "type": "string", "maxLength": 500 },
+        "landmark": { "type": "string", "maxLength": 100 },
+        "pinCode": { "type": "string", "maxLength": 10 },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "deliveryCharge": { "type": "number" },
+        "grandTotal": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["UPI", "QR", "COD"] },
+        "paymentStatus": { "type": "string" },
+        "orderStatus": { "type": "string" },
+        "notes": { "type": "string", "maxLength": 500 },
+        "internalNotes": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["orderNumber", "customerName", "mobile", "address", "pinCode", "items", "grandTotal"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Store configuration documents (site, payment, delivery, contact, theme, businessHours)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "data": { "type": "object" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Catalog of clothing products"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Clothing categories and collections"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders and status history"
+    },
+    "/settings/{settingsDoc}": {
+      "schema": "Settings",
+      "description": "System and store configuration settings"
+    }
+  }
+}

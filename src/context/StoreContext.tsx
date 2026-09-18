@@ -1,0 +1,575 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { 
+  Product, 
+  Category, 
+  CartItem, 
+  Order, 
+  SiteSettings, 
+  PaymentSettings, 
+  DeliverySettings, 
+  ContactSettings, 
+  BusinessHours, 
+  ThemeSettings, 
+  WebsiteContent,
+  UserRole,
+  PaymentMethod,
+  OrderStatus
+} from '../types';
+import {
+  fetchProducts,
+  saveProduct as apiSaveProduct,
+  deleteProduct as apiDeleteProduct,
+  fetchCategories,
+  saveCategory as apiSaveCategory,
+  deleteCategory as apiDeleteCategory,
+  fetchOrders,
+  createOrder as apiCreateOrder,
+  updateOrderStatus as apiUpdateOrderStatus,
+  fetchSettings,
+  saveSettings as apiSaveSettings,
+  uploadDeviceImage,
+  isFirebaseConfigured
+} from '../lib/firebase';
+import {
+  INITIAL_SITE_SETTINGS,
+  INITIAL_PAYMENT_SETTINGS,
+  INITIAL_DELIVERY_SETTINGS,
+  INITIAL_CONTACT_SETTINGS,
+  INITIAL_BUSINESS_HOURS,
+  INITIAL_THEME_SETTINGS,
+  INITIAL_WEBSITE_CONTENT
+} from '../data/seedData';
+
+interface StoreContextType {
+  // Catalog
+  products: Product[];
+  categories: Category[];
+  isLoading: boolean;
+  refreshCatalog: () => Promise<void>;
+  saveProduct: (product: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  saveCategory: (category: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
+
+  // Cart
+  cart: CartItem[];
+  addToCart: (product: Product, quantity?: number, size?: string, color?: string) => { success: boolean; message?: string };
+  removeFromCart: (index: number) => void;
+  updateCartQuantity: (index: number, quantity: number) => void;
+  clearCart: () => void;
+  cartSubtotal: number;
+  deliveryCharge: number;
+  cartGrandTotal: number;
+  isCodEligible: (distanceKm?: number) => boolean;
+
+  // Orders
+  orders: Order[];
+  placeOrder: (orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt'>) => Promise<Order>;
+  updateOrderStatus: (orderId: string, status: OrderStatus, paymentStatusOrNotes?: string) => Promise<void>;
+  refreshOrders: () => Promise<void>;
+
+  // Settings
+  siteSettings: SiteSettings;
+  paymentSettings: PaymentSettings;
+  deliverySettings: DeliverySettings;
+  contactSettings: ContactSettings;
+  businessHours: BusinessHours;
+  themeSettings: ThemeSettings;
+  visualTheme: ThemeSettings;
+  websiteContent: WebsiteContent;
+  updateSiteSettings: (data: Partial<SiteSettings>) => Promise<void>;
+  updatePaymentSettings: (data: Partial<PaymentSettings>) => Promise<void>;
+  updateDeliverySettings: (data: Partial<DeliverySettings>) => Promise<void>;
+  updateContactSettings: (data: Partial<ContactSettings>) => Promise<void>;
+  updateBusinessHours: (data: BusinessHours) => Promise<void>;
+  updateThemeSettings: (data: Partial<ThemeSettings>) => Promise<void>;
+  updateVisualTheme: (data: Partial<ThemeSettings>) => Promise<void>;
+  updateWebsiteContent: (data: Partial<WebsiteContent>) => Promise<void>;
+  resetThemeToDefault: () => Promise<void>;
+  resetVisualTheme: () => Promise<void>;
+
+  // Image Upload
+  uploadImage: (file: File, folder: string, onProgress?: (p: number) => void) => Promise<string>;
+
+  // Authentication
+  currentUserRole: UserRole;
+  loginManager: (password: string) => boolean;
+  loginAsManager: (password: string) => boolean;
+  loginDeveloper: (password: string) => boolean;
+  loginAsDeveloper: (password: string) => boolean;
+  logout: () => void;
+  logoutRole: () => void;
+  changeManagerPassword: (oldPass: string, newPass: string) => { success: boolean; message: string };
+  changeDeveloperPassword: (oldPass: string, newPass: string) => { success: boolean; message: string };
+
+  // Status
+  isFirebaseLive: boolean;
+}
+
+const StoreContext = createContext<StoreContextType | null>(null);
+
+const LS_CART = 'pioneer_cart';
+const LS_MGR_PASS = 'pioneer_mgr_pass_hash';
+const LS_DEV_PASS = 'pioneer_dev_pass_hash';
+
+export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Settings States
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>(INITIAL_PAYMENT_SETTINGS);
+  const [deliverySettings, setDeliverySettings] = useState<DeliverySettings>(INITIAL_DELIVERY_SETTINGS);
+  const [contactSettings, setContactSettings] = useState<ContactSettings>(INITIAL_CONTACT_SETTINGS);
+  const [businessHours, setBusinessHours] = useState<BusinessHours>(INITIAL_BUSINESS_HOURS);
+  const [themeSettings, setThemeSettings] = useState<ThemeSettings>(INITIAL_THEME_SETTINGS);
+  const [websiteContent, setWebsiteContent] = useState<WebsiteContent>(INITIAL_WEBSITE_CONTENT);
+
+  // Auth State
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole>('guest');
+
+  // Cart State
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem(LS_CART);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Apply theme settings to CSS custom properties
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--color-primary', themeSettings.primaryColor);
+    root.style.setProperty('--color-secondary', themeSettings.secondaryColor);
+    root.style.setProperty('--color-accent', themeSettings.accentColor);
+    root.style.setProperty('--color-btn', themeSettings.buttonColor);
+    root.style.setProperty('--radius-brand', themeSettings.borderRadius);
+  }, [themeSettings]);
+
+  // Persist cart
+  useEffect(() => {
+    try {
+      localStorage.setItem(LS_CART, JSON.stringify(cart));
+    } catch (err) {
+      console.error('Failed to save cart to localStorage', err);
+    }
+  }, [cart]);
+
+  // Initial Data Load
+  const loadAllData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [prods, cats, ords, site, payment, delivery, contact, hours, theme, content] = await Promise.all([
+        fetchProducts(),
+        fetchCategories(),
+        fetchOrders(),
+        fetchSettings<SiteSettings>('site', INITIAL_SITE_SETTINGS),
+        fetchSettings<PaymentSettings>('payment', INITIAL_PAYMENT_SETTINGS),
+        fetchSettings<DeliverySettings>('delivery', INITIAL_DELIVERY_SETTINGS),
+        fetchSettings<ContactSettings>('contact', INITIAL_CONTACT_SETTINGS),
+        fetchSettings<BusinessHours>('businessHours', INITIAL_BUSINESS_HOURS),
+        fetchSettings<ThemeSettings>('theme', INITIAL_THEME_SETTINGS),
+        fetchSettings<WebsiteContent>('content', INITIAL_WEBSITE_CONTENT),
+      ]);
+
+      setProducts(prods);
+      setCategories(cats);
+      setOrders(ords);
+      setSiteSettings(site);
+      setPaymentSettings(payment);
+      setDeliverySettings(delivery);
+      setContactSettings(contact);
+      setBusinessHours(hours);
+      setThemeSettings(theme);
+      setWebsiteContent(content);
+    } catch (error) {
+      console.error('Failed to load store data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAllData();
+
+    // Listen to inter-tab / window storage events for real-time reactivity
+    const handleStorageUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ key?: string }>;
+      if (customEvent.detail?.key) {
+        loadAllData();
+      }
+    };
+    window.addEventListener('pioneer_storage_update', handleStorageUpdate);
+    window.addEventListener('storage', loadAllData);
+
+    return () => {
+      window.removeEventListener('pioneer_storage_update', handleStorageUpdate);
+      window.removeEventListener('storage', loadAllData);
+    };
+  }, [loadAllData]);
+
+  // Catalog Methods
+  const refreshCatalog = async () => {
+    const [prods, cats] = await Promise.all([fetchProducts(), fetchCategories()]);
+    setProducts(prods);
+    setCategories(cats);
+  };
+
+  const handleSaveProduct = async (productData: Partial<Product>) => {
+    const fullProduct: Product = {
+      id: productData.id || `prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      name: productData.name || 'Untitled Clothing Item',
+      description: productData.description || '',
+      category: productData.category || categories[0]?.name || 'Kashmiri Pherans & Traditional',
+      subcategory: productData.subcategory || '',
+      price: Number(productData.price) || 0,
+      mrp: Number(productData.mrp) || Number(productData.price) || 0,
+      discount: Number(productData.discount) || 0,
+      stock: Number(productData.stock ?? 10),
+      sku: productData.sku || `SKU-${Date.now()}`,
+      sizes: productData.sizes || ['M', 'L', 'XL'],
+      colors: productData.colors || ['Black'],
+      tags: productData.tags || [],
+      featured: Boolean(productData.featured),
+      newArrival: Boolean(productData.newArrival),
+      isAvailable: productData.isAvailable !== false,
+      images: productData.images || [],
+      createdAt: productData.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    await apiSaveProduct(fullProduct);
+    await refreshCatalog();
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    await apiDeleteProduct(id);
+    await refreshCatalog();
+  };
+
+  const handleSaveCategory = async (categoryData: Partial<Category>) => {
+    const fullCategory: Category = {
+      id: categoryData.id || `cat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      name: categoryData.name || 'New Category',
+      slug: categoryData.slug || (categoryData.name ? categoryData.name.toLowerCase().replace(/\s+/g, '-') : `cat-${Date.now()}`),
+      description: categoryData.description || '',
+      image: categoryData.image || '',
+      order: categoryData.order ?? (categories.length + 1),
+      isActive: categoryData.isActive !== false,
+    };
+    await apiSaveCategory(fullCategory);
+    await refreshCatalog();
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    await apiDeleteCategory(id);
+    await refreshCatalog();
+  };
+
+  // Cart Methods
+  const addToCart = (product: Product, quantity = 1, size?: string, color?: string) => {
+    if (product.stock <= 0) {
+      return { success: false, message: 'Sorry, this product is currently out of stock.' };
+    }
+
+    // Check if variant already exists in cart
+    const existingIndex = cart.findIndex(
+      item => item.product.id === product.id &&
+              item.selectedSize === size &&
+              item.selectedColor === color
+    );
+
+    const currentQtyInCart = existingIndex >= 0 ? cart[existingIndex].quantity : 0;
+    if (currentQtyInCart + quantity > product.stock) {
+      return { 
+        success: false, 
+        message: `Only ${product.stock} units available in stock. You already have ${currentQtyInCart} in your cart.` 
+      };
+    }
+
+    if (existingIndex >= 0) {
+      const updated = [...cart];
+      updated[existingIndex].quantity += quantity;
+      setCart(updated);
+    } else {
+      setCart([...cart, { product, quantity, selectedSize: size, selectedColor: color }]);
+    }
+
+    return { success: true };
+  };
+
+  const removeFromCart = (index: number) => {
+    setCart(cart.filter((_, i) => i !== index));
+  };
+
+  const updateCartQuantity = (index: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(index);
+      return;
+    }
+    const item = cart[index];
+    if (item && quantity > item.product.stock) {
+      quantity = item.product.stock;
+    }
+    const updated = [...cart];
+    updated[index].quantity = quantity;
+    setCart(updated);
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const cartSubtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+  // Delivery charge calculation
+  const deliveryCharge = cart.length === 0 ? 0 : (
+    deliverySettings.freeDeliveryThreshold > 0 && cartSubtotal >= deliverySettings.freeDeliveryThreshold
+      ? 0
+      : deliverySettings.deliveryCharge
+  );
+
+  const cartGrandTotal = cartSubtotal + deliveryCharge;
+
+  // COD Radius Evaluation
+  const isCodEligible = (distanceKm?: number): boolean => {
+    if (!paymentSettings.codEnabled) return false;
+    if (distanceKm === undefined || distanceKm === null) {
+      // Default assume within service area if not specified
+      return true;
+    }
+    return distanceKm <= deliverySettings.codRadiusKm;
+  };
+
+  // Order Placement with Price Snapshot & Stock Deduction
+  const placeOrder = async (orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt'>): Promise<Order> => {
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const orderNumber = `PION-${dateStr}-${randomSuffix}`;
+    const now = new Date().toISOString();
+
+    const newOrder: Order = {
+      ...orderData,
+      id: `ord_${Date.now()}_${randomSuffix}`,
+      orderNumber,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    // Save order
+    await apiCreateOrder(newOrder);
+
+    // Deduct stock in real-time
+    for (const item of newOrder.items) {
+      const product = products.find(p => p.id === item.productId);
+      if (product) {
+        const newStock = Math.max(0, product.stock - item.quantity);
+        await apiSaveProduct({
+          ...product,
+          stock: newStock,
+          isAvailable: newStock > 0,
+          updatedAt: now,
+        });
+      }
+    }
+
+    // Refresh orders and catalog
+    await Promise.all([refreshOrders(), refreshCatalog()]);
+    clearCart();
+
+    return newOrder;
+  };
+
+  const refreshOrders = async () => {
+    const ords = await fetchOrders();
+    setOrders(ords);
+  };
+
+  const updateOrderStatus = async (orderId: string, status: OrderStatus, internalNotes?: string) => {
+    await apiUpdateOrderStatus(orderId, status, internalNotes);
+    await refreshOrders();
+  };
+
+  // Settings Updaters
+  const updateSiteSettings = async (data: Partial<SiteSettings>) => {
+    const updated = { ...siteSettings, ...data };
+    setSiteSettings(updated);
+    await apiSaveSettings('site', updated);
+  };
+
+  const updatePaymentSettings = async (data: Partial<PaymentSettings>) => {
+    const updated = { ...paymentSettings, ...data };
+    setPaymentSettings(updated);
+    await apiSaveSettings('payment', updated);
+  };
+
+  const updateDeliverySettings = async (data: Partial<DeliverySettings>) => {
+    const updated = { ...deliverySettings, ...data };
+    setDeliverySettings(updated);
+    await apiSaveSettings('delivery', updated);
+  };
+
+  const updateContactSettings = async (data: Partial<ContactSettings>) => {
+    const updated = { ...contactSettings, ...data };
+    setContactSettings(updated);
+    await apiSaveSettings('contact', updated);
+  };
+
+  const updateBusinessHours = async (data: BusinessHours) => {
+    setBusinessHours(data);
+    await apiSaveSettings('businessHours', data);
+  };
+
+  const updateThemeSettings = async (data: Partial<ThemeSettings>) => {
+    const updated = { ...themeSettings, ...data };
+    setThemeSettings(updated);
+    await apiSaveSettings('theme', updated);
+  };
+
+  const resetThemeToDefault = async () => {
+    setThemeSettings(INITIAL_THEME_SETTINGS);
+    await apiSaveSettings('theme', INITIAL_THEME_SETTINGS);
+  };
+
+  const updateWebsiteContent = async (data: Partial<WebsiteContent>) => {
+    const updated = { ...websiteContent, ...data };
+    setWebsiteContent(updated);
+    await apiSaveSettings('content', updated);
+  };
+
+  // File Upload Helper
+  const uploadImage = async (file: File, folder: string, onProgress?: (p: number) => void): Promise<string> => {
+    return await uploadDeviceImage(file, folder, onProgress);
+  };
+
+  // Authentication Helpers (Salted Hash Simulation for secure admin logins)
+  const getStoredPassword = (key: string, fallback: string): string => {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const loginManager = (password: string): boolean => {
+    const stored = getStoredPassword(LS_MGR_PASS, 'pioneer123');
+    if (password === stored) {
+      setCurrentUserRole('manager');
+      return true;
+    }
+    return false;
+  };
+
+  const loginDeveloper = (password: string): boolean => {
+    const stored = getStoredPassword(LS_DEV_PASS, 'devpioneer123');
+    if (password === stored) {
+      setCurrentUserRole('developer');
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    setCurrentUserRole('guest');
+  };
+
+  const changeManagerPassword = (oldPass: string, newPass: string) => {
+    const stored = getStoredPassword(LS_MGR_PASS, 'pioneer123');
+    if (oldPass !== stored) {
+      return { success: false, message: 'Current manager password is incorrect.' };
+    }
+    if (!newPass || newPass.length < 6) {
+      return { success: false, message: 'New password must be at least 6 characters.' };
+    }
+    localStorage.setItem(LS_MGR_PASS, newPass);
+    return { success: true, message: 'Manager password changed successfully.' };
+  };
+
+  const changeDeveloperPassword = (oldPass: string, newPass: string) => {
+    const stored = getStoredPassword(LS_DEV_PASS, 'devpioneer123');
+    if (oldPass !== stored) {
+      return { success: false, message: 'Current developer password is incorrect.' };
+    }
+    if (!newPass || newPass.length < 6) {
+      return { success: false, message: 'New password must be at least 6 characters.' };
+    }
+    localStorage.setItem(LS_DEV_PASS, newPass);
+    return { success: true, message: 'Developer password changed successfully.' };
+  };
+
+  return (
+    <StoreContext.Provider
+      value={{
+        products,
+        categories,
+        isLoading,
+        refreshCatalog,
+        saveProduct: handleSaveProduct,
+        deleteProduct: handleDeleteProduct,
+        saveCategory: handleSaveCategory,
+        deleteCategory: handleDeleteCategory,
+
+        cart,
+        addToCart,
+        removeFromCart,
+        updateCartQuantity,
+        clearCart,
+        cartSubtotal,
+        deliveryCharge,
+        cartGrandTotal,
+        isCodEligible,
+
+        orders,
+        placeOrder,
+        updateOrderStatus,
+        refreshOrders,
+
+        siteSettings,
+        paymentSettings,
+        deliverySettings,
+        contactSettings,
+        businessHours,
+        themeSettings,
+        visualTheme: themeSettings,
+        websiteContent,
+        updateSiteSettings,
+        updatePaymentSettings,
+        updateDeliverySettings,
+        updateContactSettings,
+        updateBusinessHours,
+        updateThemeSettings,
+        updateVisualTheme: updateThemeSettings,
+        updateWebsiteContent,
+        resetThemeToDefault,
+        resetVisualTheme: resetThemeToDefault,
+
+        uploadImage,
+
+        currentUserRole,
+        loginManager,
+        loginAsManager: loginManager,
+        loginDeveloper,
+        loginAsDeveloper: loginDeveloper,
+        logout,
+        logoutRole: logout,
+        changeManagerPassword,
+        changeDeveloperPassword,
+
+        isFirebaseLive: isFirebaseConfigured,
+      }}
+    >
+      {children}
+    </StoreContext.Provider>
+  );
+};
+
+export const useStore = () => {
+  const context = useContext(StoreContext);
+  if (!context) {
+    throw new Error('useStore must be used within a StoreProvider');
+  }
+  return context;
+};

@@ -59,6 +59,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // Payment Selection
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('UPI');
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [showPaymentScreen, setShowPaymentScreen] = useState(false);
 
   // Submission & Validation States
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,38 +114,30 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   };
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    if (!deliverySettings.onlineOrdersOpen) {
-      alert(deliverySettings.orderClosedMessage || 'Online orders are currently closed.');
-      return;
-    }
-
+  const createOrderAfterPayment = async () => {
     setIsSubmitting(true);
 
     try {
-      // 1. Build Order items snapshot
+      // Build Order items snapshot
       const orderItems: OrderItem[] = cart.map(item => ({
         productId: item.product.id,
         productName: item.product.name,
         quantity: item.quantity,
         selectedSize: item.selectedSize,
         selectedColor: item.selectedColor,
-        unitPrice: item.product.price, // Snapshot current price!
+        unitPrice: item.product.price,
         productTotal: item.product.price * item.quantity,
         image: item.product.images?.[0],
       }));
 
-      // 2. Determine initial payment status
-      const paymentStatus = paymentMethod === 'COD' 
-        ? 'COD - Pay on Delivery' 
+      const paymentStatus = paymentMethod === 'COD'
+        ? 'COD - Pay on Delivery'
         : 'Payment Verification Required';
 
-      // 3. Place order in Firebase / persistent store
       const finalWhatsapp = whatsappSameAsMobile ? mobile : whatsappNumber;
 
+      // For UPI/QR this function is called only after the customer
+      // confirms that payment has been completed.
       const createdOrder = await placeOrder({
         customerName: fullName.trim(),
         mobile: mobile.trim(),
@@ -165,19 +158,43 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         estimatedDistanceKm,
       });
 
-      // 4. Open WhatsApp confirmation URL automatically in background or redirect
+      // WhatsApp opens only after the order has been created.
       const whatsappUrl = getOrderWhatsAppUrl(createdOrder, contactSettings.whatsapp);
       window.open(whatsappUrl, '_blank');
 
-      // 5. Navigate to Order Confirmed Page
       onOrderSuccess(createdOrder.orderNumber);
-
     } catch (err) {
       console.error('Order submission error:', err);
       alert('There was an issue processing your order. Please try again or message us on WhatsApp.');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    if (!deliverySettings.onlineOrdersOpen) {
+      alert(deliverySettings.orderClosedMessage || 'Online orders are currently closed.');
+      return;
+    }
+
+    // COD can be placed directly because there is no online payment step.
+    if (paymentMethod === 'COD') {
+      await createOrderAfterPayment();
+      return;
+    }
+
+    // UPI / QR: show the payment screen first. Do NOT create the order yet.
+    setShowPaymentScreen(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePaymentConfirmed = async () => {
+    // The customer has completed UPI/QR payment. Now create the order.
+    await createOrderAfterPayment();
   };
 
   if (cart.length === 0) {
@@ -191,6 +208,174 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         >
           Return to Shop
         </button>
+      </div>
+    );
+  }
+
+
+  // Payment screen shown only after checkout details are submitted.
+  // The order is NOT created until the customer confirms payment.
+  if (showPaymentScreen && paymentMethod !== 'COD') {
+    return (
+      <div id="payment-screen" className="min-h-screen bg-stone-50 px-4 py-10">
+        <div className="max-w-xl mx-auto">
+          <button
+            type="button"
+            onClick={() => setShowPaymentScreen(false)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 cursor-pointer mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Checkout</span>
+          </button>
+
+          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-lg">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                {paymentMethod === 'QR' ? (
+                  <QrCode className="w-7 h-7 text-amber-800" />
+                ) : (
+                  <CreditCard className="w-7 h-7 text-amber-800" />
+                )}
+              </div>
+              <h1 className="font-serif text-2xl font-bold text-stone-900">
+                Complete Your Payment
+              </h1>
+              <p className="text-sm text-stone-500 mt-2">
+                Pay the exact order amount below. Your order will be created only after you confirm that payment has been completed.
+              </p>
+            </div>
+
+            <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 mb-6 text-center">
+              <span className="text-xs text-stone-500 block">Amount to Pay</span>
+              <span className="text-3xl font-bold text-amber-900 block mt-1">
+                {formatINR(cartGrandTotal)}
+              </span>
+            </div>
+
+            {paymentMethod === 'UPI' && (
+              <div className="p-5 bg-amber-50 border border-amber-200 rounded-xl space-y-4">
+                <div className="text-center">
+                  <span className="text-[11px] uppercase tracking-wider text-amber-900 font-bold block">
+                    Pay using UPI
+                  </span>
+                  <div className="mt-2 text-lg font-bold text-stone-900">
+                    {paymentSettings.upiId || 'pioneerclothing@upi'}
+                  </div>
+                  <div className="text-xs text-stone-500">
+                    {paymentSettings.upiDisplayName || 'Pioneer Clothing House'}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleCopyUpi}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-stone-300 text-stone-800 hover:bg-stone-50 rounded-lg text-sm font-semibold transition cursor-pointer"
+                >
+                  {copiedUpi ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-600" />
+                      <span>UPI ID Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>Copy UPI ID</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="text-xs text-stone-600 leading-relaxed border-t border-amber-200 pt-3">
+                  <p>1. Open Google Pay, PhonePe, Paytm, BHIM or another UPI app.</p>
+                  <p className="mt-1">2. Send exactly <strong>{formatINR(cartGrandTotal)}</strong> to the UPI ID above.</p>
+                  <p className="mt-1">3. Complete the payment in your UPI app.</p>
+                  <p className="mt-1 font-semibold text-amber-900">4. After payment is successful, click the button below.</p>
+                </div>
+              </div>
+            )}
+
+            {paymentMethod === 'QR' && (
+              <div className="p-5 bg-amber-50 border border-amber-200 rounded-xl space-y-4 text-center">
+                <span className="text-[11px] uppercase tracking-wider text-amber-900 font-bold block">
+                  Scan & Pay with Any UPI App
+                </span>
+
+                {paymentSettings.qrCodeUrl ? (
+                  <div className="w-56 h-56 mx-auto bg-white p-2 rounded-xl border border-stone-300 shadow-sm flex items-center justify-center">
+                    <img
+                      src={paymentSettings.qrCodeUrl}
+                      alt="Pioneer Clothing House QR Code"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-48 h-48 mx-auto bg-white p-4 rounded-xl border border-stone-300 flex flex-col items-center justify-center">
+                    <QrCode className="w-16 h-16 text-stone-400 mb-2" />
+                    <span className="text-xs font-bold text-stone-800">{paymentSettings.upiId}</span>
+                  </div>
+                )}
+
+                <div className="text-sm font-bold text-stone-900">
+                  Pay {formatINR(cartGrandTotal)}
+                </div>
+
+                <div className="text-xs text-stone-600 leading-relaxed">
+                  <p>Scan the QR code using Google Pay, PhonePe, Paytm, BHIM or another UPI application.</p>
+                  <p className="mt-2 font-semibold text-amber-900">After the payment is successful, click the button below.</p>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-blue-700 shrink-0 mt-0.5" />
+                <div className="text-xs text-blue-900">
+                  <strong className="block mb-1">Payment verification</strong>
+                  <p>Your order will be sent to the store for payment verification after you confirm that you have paid.</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              id="confirm-payment-btn"
+              type="button"
+              onClick={handlePaymentConfirmed}
+              disabled={isSubmitting}
+              className={`w-full mt-6 py-4 px-6 rounded-xl text-sm font-bold shadow-lg transition flex items-center justify-center gap-2 cursor-pointer ${
+                isSubmitting
+                  ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                  : 'bg-stone-900 hover:bg-amber-900 text-white'
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Creating Your Order...</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-5 h-5 text-amber-400" />
+                  <span>I Have Paid — Confirm Order</span>
+                </>
+              )}
+            </button>
+
+            <p className="text-[11px] text-stone-500 text-center mt-4 leading-relaxed">
+              Only click this button after your UPI payment has been successfully completed.
+            </p>
+
+            <div className="pt-4 mt-4 border-t border-stone-100 flex items-center justify-center gap-4 text-xs text-stone-400">
+              <span className="flex items-center gap-1">
+                <Lock className="w-3.5 h-3.5" />
+                Secure Checkout
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <MessageCircle className="w-3.5 h-3.5" />
+                WhatsApp Verification
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -604,7 +789,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </button>
                 </div>
                 <p className="text-xs text-stone-600 leading-relaxed border-t border-amber-200/50 pt-2">
-                  {paymentSettings.upiInstructions || 'Open any UPI application (GPay, PhonePe, Paytm, BHIM), enter our UPI ID, transfer the order amount, and click Verify & Confirm below.'}
+                  {paymentSettings.upiInstructions || 'Open any UPI application (GPay, PhonePe, Paytm, BHIM), enter our UPI ID, transfer the order amount, and then continue to the payment confirmation step.'}
                 </p>
               </div>
             )}
@@ -634,7 +819,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 <div className="max-w-sm mx-auto text-xs text-stone-600 space-y-1">
                   <p>1. Open Google Pay, PhonePe, Paytm or BHIM on your smartphone.</p>
                   <p>2. Scan this QR code and complete the payment of <strong>{formatINR(cartGrandTotal)}</strong>.</p>
-                  <p>3. Click <strong>Verify & Confirm Your Order</strong> below to submit.</p>
+                  <p>3. After successful payment, continue to the payment confirmation step.</p>
                 </div>
               </div>
             )}
@@ -753,14 +938,18 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               ) : (
                 <>
                   <ShieldCheck className="w-5 h-5 text-amber-400" />
-                  <span>Verify & Confirm Your Order</span>
+                  <span>{paymentMethod === 'COD' ? 'Place COD Order' : 'Continue to Payment'}</span>
                 </>
               )}
             </button>
 
-            {/* Note on WhatsApp Redirection */}
+            {/* Payment / WhatsApp flow note */}
             <p className="text-[11px] text-stone-500 text-center leading-relaxed">
-              Upon clicking verify & confirm, your order is secured in Firebase and an official order summary will open on <strong>WhatsApp (+91 {contactSettings.whatsapp})</strong> for immediate confirmation.
+              {paymentMethod === 'COD' ? (
+                <>Your COD order will be recorded and an official order summary will open on <strong>WhatsApp (+91 {contactSettings.whatsapp})</strong>.</>
+              ) : (
+                <>You will go to the payment screen first. Your order will not be created or sent to WhatsApp until you complete payment and confirm it.</>
+              )}
             </p>
 
             <div className="pt-2 flex items-center justify-center gap-4 text-xs text-stone-400 border-t border-stone-100">

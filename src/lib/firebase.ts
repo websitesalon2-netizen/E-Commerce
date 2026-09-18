@@ -274,7 +274,22 @@ export async function updateOrderStatus(
     }
   }
 }
+export async function deleteOrder(orderId: string): Promise<void> {
+  // Delete from local storage
+  const current = getLocal<Order[]>(LS_ORDERS, []);
+  const updated = current.filter(o => o.id !== orderId);
+  setLocal(LS_ORDERS, updated);
 
+  // Delete from Firestore
+  if (db && isFirebaseConfigured) {
+    try {
+      await deleteDoc(doc(db, 'orders', orderId));
+    } catch (err) {
+      console.error('Firestore delete order error:', err);
+      throw err;
+    }
+  }
+}
 export async function getOrderById(orderId: string): Promise<Order | null> {
   if (db && isFirebaseConfigured) {
     try {

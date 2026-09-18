@@ -24,6 +24,7 @@ import {
   deleteCategory as apiDeleteCategory,
   fetchOrders,
   createOrder as apiCreateOrder,
+  deleteOrder as apiDeleteOrder,
   updateOrderStatus as apiUpdateOrderStatus,
   fetchSettings,
   saveSettings as apiSaveSettings,
@@ -68,6 +69,7 @@ interface StoreContextType {
   orders: Order[];
   placeOrder: (orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt'>) => Promise<Order>;
   updateOrderStatus: (orderId: string, status: OrderStatus, paymentStatusOrNotes?: string) => Promise<void>;
+  deleteOrder: (orderId: string) => Promise<void>;
   refreshOrders: () => Promise<void>;
 
   // Settings
@@ -394,6 +396,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await apiUpdateOrderStatus(orderId, status, internalNotes);
     await refreshOrders();
   };
+  
+  const deleteOrder = async (orderId: string) => {
+  await apiDeleteOrder(orderId);
+  await refreshOrders();
+};
 
   // Settings Updaters
   const updateSiteSettings = async (data: Partial<SiteSettings>) => {
@@ -527,6 +534,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         orders,
         placeOrder,
         updateOrderStatus,
+        deleteOrder,
         refreshOrders,
 
         siteSettings,

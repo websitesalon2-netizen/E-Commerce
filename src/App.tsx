@@ -19,10 +19,23 @@ import { DeveloperDesk } from './pages/developer/DeveloperDesk';
 import { Product } from './types';
 
 export default function App() {
-  // Hash-based client routing
+  // Hash-based client routing with automatic path-to-hash detection
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
     const h = window.location.hash;
-    return (h && h.startsWith('#/')) ? h : '#/';
+    if (h && h.startsWith('#/')) return h;
+
+    // Check if pathname contains a recognized route (e.g. from a shared direct link)
+    try {
+      const p = window.location.pathname.replace(/^\/+/, '').split('/')[0];
+      const known = ['shop', 'checkout', 'order-confirmed', 'policies', 'about', 'contact', 'find-us', 'manager', 'developer'];
+      if (p && known.includes(p.toLowerCase())) {
+        return `#/${p.toLowerCase()}${window.location.search}`;
+      }
+    } catch {
+      // Ignore
+    }
+
+    return '#/';
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -30,9 +43,9 @@ export default function App() {
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    // If no valid hash exists, set default hash without reloading
+    // If no valid hash exists, set default or current route hash without reloading
     if (!window.location.hash || !window.location.hash.startsWith('#/')) {
-      window.location.hash = '#/';
+      window.location.hash = currentRoute;
     }
 
     const handleHashChange = () => {
@@ -43,7 +56,7 @@ export default function App() {
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [currentRoute]);
 
   const navigateTo = (route: string) => {
     window.location.hash = route;
@@ -51,14 +64,17 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Parse route parameters
+  // Parse route parameters with normalization
   const getRouteInfo = () => {
     const hash = currentRoute;
     const [pathPart, queryPart] = hash.split('?');
     const params = new URLSearchParams(queryPart || '');
 
+    // Normalize path by stripping trailing slashes (e.g. '#/shop/' -> '#/shop')
+    const normalizedPath = (pathPart || '#/').replace(/\/+$/, '') || '#/';
+
     return {
-      path: pathPart,
+      path: normalizedPath,
       category: params.get('category') || undefined,
       filter: params.get('filter') || undefined,
       tab: (params.get('tab') as 'delivery' | 'returns' | 'terms' | 'privacy') || undefined,

@@ -2,18 +2,48 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Pioneer Clothing House</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pioneer Clothing House — Pulwama</title>
     <script>
       // Single Page Application fallback for GitHub Pages
-      // Redirects to base application path preserving current hash
-      var path = window.location.pathname;
-      var repo = path.split('/')[1] || '';
-      var target = repo ? '/' + repo + '/#' : '/#';
-      window.location.replace(target);
+      (function() {
+        var l = window.location;
+        var path = l.pathname;
+        var segments = path.split('/').filter(Boolean);
+        
+        var knownRoutes = ['shop', 'checkout', 'order-confirmed', 'policies', 'about', 'contact', 'find-us', 'manager', 'developer'];
+        var route = '#/';
+        var basePath = '/';
+
+        if (segments.length > 0) {
+          // Check if first segment is a known route (user site on2-netizen.github.io/shop)
+          var firstSeg = segments[0].toLowerCase();
+          if (knownRoutes.indexOf(firstSeg) !== -1) {
+            basePath = '/';
+            route = '#/' + segments.join('/') + l.search;
+          } else if (segments.length > 1 && knownRoutes.indexOf(segments[1].toLowerCase()) !== -1) {
+            // Project site (user.github.io/repo/shop)
+            basePath = '/' + segments[0] + '/';
+            route = '#/' + segments.slice(1).join('/') + l.search;
+          } else if (segments.length === 1) {
+            // Single segment not matching route, probably repo root without slash
+            basePath = '/' + segments[0] + '/';
+            route = '#/';
+          }
+        }
+
+        var target = l.origin + basePath + route;
+        window.location.replace(target);
+      })();
     </script>
   </head>
-  <body style="font-family: sans-serif; text-align: center; padding: 40px; background: #fafaf9; color: #1c1917;">
-    <h2>Loading Pioneer Clothing House...</h2>
-    <p><a href="./#/" style="color: #991b1b; text-decoration: underline;">Click here if you are not redirected automatically</a></p>
+  <body style="font-family: system-ui, -apple-system, sans-serif; text-align: center; padding: 60px 20px; background: #fafaf9; color: #1c1917;">
+    <div style="max-width: 400px; margin: 0 auto;">
+      <h2 style="color: #881337; font-size: 24px; font-weight: 700; margin-bottom: 8px;">Pioneer Clothing House</h2>
+      <p style="color: #78716c; font-size: 14px; margin-bottom: 24px;">Opening Pulwama store collection...</p>
+      <a href="./#/" style="display: inline-block; padding: 10px 22px; background: #881337; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+        Open Storefront
+      </a>
+    </div>
   </body>
 </html>

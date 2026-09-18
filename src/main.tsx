@@ -87,11 +87,23 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </StrictMode>,
-);
+try {
+  const rootElement = document.getElementById('root');
+  if (rootElement) {
+    createRoot(rootElement).render(
+      <StrictMode>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </StrictMode>,
+    );
+  }
+} catch (mountError) {
+  console.error('Fatal initialization error:', mountError);
+  const splash = document.getElementById('pioneer-initial-splash');
+  if (splash) {
+    const errorNotice = document.getElementById('pioneer-splash-error');
+    if (errorNotice) errorNotice.style.display = 'block';
+  }
+}
 

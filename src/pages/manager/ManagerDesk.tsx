@@ -45,6 +45,7 @@ export const ManagerDesk: React.FC = () => {
     saveCategory,
     deleteCategory,
     updateOrderStatus,
+    deleteOrder,
     updatePaymentSettings,
     updateDeliverySettings,
     updateContactSettings,

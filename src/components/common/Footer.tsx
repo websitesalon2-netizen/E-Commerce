@@ -52,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </div>
 
             <p className="text-sm text-stone-400 leading-relaxed">
-              {websiteContent.footerText || 'Premium clothing house in Pulwama, offering exquisite Kashmiri woolen pherans, hand-embroidered shawls, executive suits, and festive traditional wear.'}
+              {websiteContent.footerText || 'Premium clothing house in Shalina, offering exquisite Kashmiri woolen pherans, hand-embroidered shawls, executive suits, and festive traditional wear.'}
             </p>
 
             <div className="space-y-2.5 text-xs text-stone-300">
@@ -198,7 +198,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   className="hover:text-amber-400 transition cursor-pointer flex items-center gap-2"
                 >
                   <MapPin className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Find Us in Pulwama</span>
+                  <span>Find Us in Shalina</span>
                 </button>
               </li>
             </ul>
@@ -208,7 +208,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div className="space-y-3">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-white flex items-center gap-2">
               <Clock className="w-4 h-4 text-amber-400" />
-              <span>Store Hours (Pulwama)</span>
+              <span>Store Hours (Shalina)</span>
             </h4>
             <div className="space-y-1.5 text-xs text-stone-400">
               <div className="flex justify-between py-1 border-b border-stone-800">
@@ -237,7 +237,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </div>
             </div>
             <p className="text-[11px] text-stone-500 pt-2">
-              Circular Road, Near Mazban Hotel, Pulwama - 192121.
+              Shalina, Budgam, J&K, India - 192121.
             </p>
           </div>
 

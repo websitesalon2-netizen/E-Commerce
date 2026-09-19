@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
     { label: "Men's Collection", route: '#/shop?category=mens', icon: User },
     { label: "Women's Collection", route: '#/shop?category=womens', icon: Users },
     { label: 'Store Location & Map', route: '#/find-us', icon: MapPin },
-    { label: 'About Pioneer', route: '#/about', icon: Info },
+    { label: 'About Zenith Apparel & Footwear', route: '#/about', icon: Info },
     { label: 'Contact & Inquiries', route: '#/contact', icon: Phone },
   ];
 
@@ -149,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
           <div>
             <span className="font-serif text-lg sm:text-2xl font-bold tracking-tight text-stone-900 block leading-tight group-hover:text-amber-900 transition">
-              {siteSettings.shopName || 'Pioneer'}
+              {siteSettings.shopName || 'Zenith Apparel & Footwear'}
             </span>
             <span className="text-[9px] sm:text-[11px] uppercase tracking-widest text-stone-500 font-medium block">
               {siteSettings.subtitle || 'Clothing House'}
@@ -313,7 +313,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-white leading-tight">
-                    {siteSettings.shopName || 'Pioneer'}
+                    {siteSettings.shopName || 'Zenith Apparel & Footwear'}
                   </h3>
                   <p className="text-[10px] uppercase tracking-widest text-stone-400">
                     {siteSettings.subtitle || 'Clothing House • Shalina'}

@@ -155,7 +155,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
               ) : product.stock <= 5 ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-md">
                   <AlertCircle className="w-4 h-4" />
-                  Hurry! Only {product.stock} units left in Pulwama store
+                  Hurry! Only {product.stock} units left in Shalina store
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-md">
@@ -296,7 +296,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-amber-800">₹</span>
-                <span>COD in Pulwama ({deliverySettings.codRadiusKm}km)</span>
+                <span>COD in Shalina ({deliverySettings.codRadiusKm}km)</span>
               </div>
             </div>
 

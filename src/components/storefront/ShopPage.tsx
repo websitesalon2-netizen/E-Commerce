@@ -151,7 +151,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-stone-200">
         <div>
           <span className="text-xs uppercase tracking-widest text-amber-900 font-bold block mb-1">
-            Pioneer Clothing House
+            Zenith Apparel & Footwear Clothing House
           </span>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
             {selectedCategory === 'all' ? 'All Apparel Collections' : selectedCategory}

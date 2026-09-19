@@ -35,7 +35,7 @@ export function buildOrderWhatsAppMessage(order: Order): string {
 
   lines.push(
     `*Delivery Address:* ${order.address}`,
-    `*City:* ${order.city || 'Pulwama'}`,
+    `*City:* ${order.city || 'Shalina'}`,
     `*PIN Code:* ${order.pinCode}`
   );
 

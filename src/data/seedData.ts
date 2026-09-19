@@ -254,8 +254,8 @@ export const INITIAL_SITE_SETTINGS: SiteSettings = {
 };
 
 export const INITIAL_PAYMENT_SETTINGS: PaymentSettings = {
-  upiId: 'pioneerclothing@upi',
-  upiDisplayName: 'Pioneer Clothing House',
+  upiId: '9622229622@ybl',
+  upiDisplayName: 'Zenith Apparel & Footwear Clothing House',
   upiInstructions: 'Pay securely using any UPI app (Google Pay, PhonePe, Paytm, BHIM). Scan the QR code or enter our UPI ID, complete the payment, and confirm your order.',
   codEnabled: true,
   qrCodeUrl: '',
@@ -267,7 +267,7 @@ export const INITIAL_DELIVERY_SETTINGS: DeliverySettings = {
   codRadiusKm: 10,
   deliveryAvailable: true,
   onlineOrdersOpen: true,
-  orderClosedMessage: 'Online orders are currently closed. Please contact Pioneer Clothing House directly on WhatsApp or visit our store in Shalina.',
+  orderClosedMessage: 'Online orders are currently closed. Please contact Zenith Apparel & Footwear Clothing House directly on WhatsApp or visit our store in Shalina.',
 };
 
 export const INITIAL_CONTACT_SETTINGS: ContactSettings = {
@@ -304,7 +304,7 @@ export const INITIAL_WEBSITE_CONTENT: WebsiteContent = {
   heroSubtitle: 'Discover the premier collection of authentic Kashmiri Pherans, master-tailored men’s suits, and exquisite designer wear at Shalina’s trusted clothing house.',
   heroCtaText: 'Explore Collection',
   promoBannerText: '✨ Special Festive Offer: Free Express Delivery Across Shalina & Kashmir on Orders Above ₹1,999!',
-  aboutTitle: 'About Pioneer Clothing House',
+  aboutTitle: 'About Zenith Apparel & Footwear Clothing House',
   aboutText: 'Established at Shalina, Budgam in the heart of J&K, Zenith Apparel & Footwear represents an unwavering commitment to quality fabric, authentic craftsmanship, and honest prices. From heirloom Kashmiri woolen pherans to contemporary formal suits and festive attire, we dress you with pride and warmth.',
   contactHeading: 'Visit Our Shalina Store',
   contactDescription: 'Experience our full collection in person or order online for fast home delivery across Jammu & Kashmir and India.',

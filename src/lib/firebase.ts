@@ -40,10 +40,10 @@ import {
 } from '../data/seedData';
 
 // Storage keys for local persistence fallback
-const LS_PRODUCTS = 'pioneer_products';
-const LS_CATEGORIES = 'pioneer_categories';
-const LS_ORDERS = 'pioneer_orders';
-const LS_SETTINGS = 'pioneer_settings_';
+const LS_PRODUCTS = 'Zenith Apparel & Footwear_products';
+const LS_CATEGORIES = 'Zenith Apparel & Footwear_categories';
+const LS_ORDERS = 'Zenith Apparel & Footwear_orders';
+const LS_SETTINGS = 'Zenith Apparel & Footwear_settings_';
 
 // Check if valid Firebase env credentials exist
 const firebaseConfig = {
@@ -96,7 +96,7 @@ function setLocal<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     // Trigger custom event for intra-window real-time updates
-    window.dispatchEvent(new CustomEvent('pioneer_storage_update', { detail: { key } }));
+    window.dispatchEvent(new CustomEvent('Zenith Apparel & Footwear_storage_update', { detail: { key } }));
   } catch (err) {
     console.error('Storage write error:', err);
   }

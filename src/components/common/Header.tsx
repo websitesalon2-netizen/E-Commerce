@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-start text-[11px] sm:text-xs">
             <span className="flex items-center gap-1.5 text-stone-300">
               <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate max-w-[230px] sm:max-w-none">Pulwama, Circular Road, Near Mazban Hotel</span>
+              <span className="truncate max-w-[230px] sm:max-w-none">Shalina, Budgam, J&K,India</span>
             </span>
             <a 
               href={`tel:${contactSettings.phone}`} 
@@ -316,7 +316,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {siteSettings.shopName || 'Pioneer'}
                   </h3>
                   <p className="text-[10px] uppercase tracking-widest text-stone-400">
-                    {siteSettings.subtitle || 'Clothing House • Pulwama'}
+                    {siteSettings.subtitle || 'Clothing House • Shalina'}
                   </p>
                 </div>
               </div>
@@ -423,7 +423,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="p-4 bg-stone-50 border-t border-stone-200 text-xs text-stone-600 space-y-2.5 shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                <span>Circular Road, Pulwama, Near Mazban Hotel</span>
+                <span>Shalina, Budgam, J&K, India</span>
               </div>
               <div className="flex items-center justify-between pt-1">
                 <a 

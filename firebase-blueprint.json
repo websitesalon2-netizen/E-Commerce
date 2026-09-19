@@ -2,7 +2,7 @@
   "entities": {
     "Product": {
       "title": "Product",
-      "description": "Indian clothing product item in the Pioneer Clothing House catalog",
+      "description": "Indian clothing product item in the Zenith Apparel & Footwear Clothing House catalog",
       "type": "object",
       "properties": {
         "id": { "type": "string" },

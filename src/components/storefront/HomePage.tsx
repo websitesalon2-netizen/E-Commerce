@@ -62,7 +62,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Eyebrow Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-600/50 text-amber-300 text-xs font-semibold backdrop-blur-xs">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>{siteSettings.shopName} {siteSettings.subtitle} • Pulwama</span>
+              <span>{siteSettings.shopName} {siteSettings.subtitle} • Shalina</span>
             </div>
 
             {/* Main Headline */}
@@ -72,7 +72,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-stone-300 font-light leading-relaxed">
-              {websiteContent.heroSubtitle || 'Discover authentic Kashmiri woolen pherans, hand-embroidered tilla collections, fine shawls, and tailored men’s suits at Pulwama’s premier fashion destination.'}
+              {websiteContent.heroSubtitle || 'Discover authentic Kashmiri woolen pherans, hand-embroidered tilla collections, fine shawls, and tailored men’s suits at Shalina’s premier fashion destination.'}
             </p>
 
             {/* CTAs */}
@@ -91,7 +91,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 onClick={() => onNavigate('#/find-us')}
                 className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-sm font-semibold backdrop-blur-xs transition flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Visit Pulwama Store</span>
+                <span>Visit Shalina Store</span>
               </button>
             </div>
 
@@ -107,7 +107,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
               <div className="border-l border-stone-800 pl-8">
                 <span className="block font-bold text-white text-base">{deliverySettings.codRadiusKm} km</span>
-                <span>COD Radius Pulwama</span>
+                <span>COD Radius Shalina</span>
               </div>
             </div>
 
@@ -247,7 +247,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               Winter & Festive Collections Are Here
             </h3>
             <p className="text-sm text-stone-300 leading-relaxed">
-              Experience the unmatched warmth of pure Kashmiri wool pherans, heavy corduroy winter jackets, and embroidered bridal velvet suits. Available for immediate dispatch or in-store pickup in Pulwama.
+              Experience the unmatched warmth of pure Kashmiri wool pherans, heavy corduroy winter jackets, and embroidered bridal velvet suits. Available for immediate dispatch or in-store pickup in Shalina.
             </p>
             <div className="pt-2">
               <button
@@ -306,7 +306,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               {websiteContent.aboutTitle || 'About Pioneer Clothing House'}
             </h2>
             <p className="text-sm text-stone-600 leading-relaxed">
-              {websiteContent.aboutText || 'Established at Circular Road, Near Mazban Hotel in the heart of Pulwama, Pioneer Clothing House represents an unwavering commitment to quality fabric, authentic craftsmanship, and honest prices. From heirloom Kashmiri woolen pherans to contemporary formal suits and festive attire, we dress you with pride and warmth.'}
+              {websiteContent.aboutText || 'Established at Shalina, Budgam in the heart of J&K, India, Zenith Apparel & Footwear represents an unwavering commitment to quality fabric, authentic craftsmanship, and honest prices. From heirloom Kashmiri woolen pherans to contemporary formal suits and festive attire, we dress you with pride and warmth.'}
             </p>
             <div className="pt-2 flex gap-4">
               <button

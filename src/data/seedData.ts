@@ -275,7 +275,7 @@ export const INITIAL_CONTACT_SETTINGS: ContactSettings = {
   whatsapp: '+91 9622229622',
   address: 'Shalina, Budgam, J&K, india - 192121',
   pinCode: '192121',
-  googleMapsUrl: 'https://www.google.co.in/maps/place/Shalina/@34.0270582,74.8979135,65m/data=!3m1!1e3!4m6!3m5!1s0x38e1894d7afbf8f5:0xe33e0dd34986148f!8m2!3d34.0203874!4d74.8755663!16s%2Fg%2F12ht8y344?entry=ttu&g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D',
+  googleMapsUrl: 'https://maps.google.com/maps?q=Shalina,%20Budgam,%20Jammu%20and%20Kashmir&output=embed',
   email: 'hussainishujaat14@gmail.com',
 };
 

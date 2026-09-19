@@ -49,7 +49,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="absolute inset-0 z-0">
           <img
             src={websiteContent.heroImageUrl || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1920&q=85'}
-            alt="Pioneer Clothing House Hero Collection"
+            alt="Zenith Apparel & Footwear Clothing House Hero Collection"
             className="w-full h-full object-cover object-center opacity-40 scale-102 transition-transform duration-1000"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/80 to-stone-950/40" />
@@ -303,7 +303,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               Our Legacy
             </span>
             <h2 className="font-serif text-3xl font-bold text-stone-900">
-              {websiteContent.aboutTitle || 'About Pioneer Clothing House'}
+              {websiteContent.aboutTitle || 'About Zenith Apparel & Footwear Clothing House'}
             </h2>
             <p className="text-sm text-stone-600 leading-relaxed">
               {websiteContent.aboutText || 'Established at Shalina, Budgam in the heart of J&K, India, Zenith Apparel & Footwear represents an unwavering commitment to quality fabric, authentic craftsmanship, and honest prices. From heirloom Kashmiri woolen pherans to contemporary formal suits and festive attire, we dress you with pride and warmth.'}
@@ -327,7 +327,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="lg:col-span-5 aspect-4/3 rounded-xl overflow-hidden bg-stone-100 shadow-md">
             <img
               src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80"
-              alt="Pioneer Clothing House Traditional Craft"
+              alt="Zenith Apparel & Footwear Clothing House Traditional Craft"
               className="w-full h-full object-cover"
             />
           </div>

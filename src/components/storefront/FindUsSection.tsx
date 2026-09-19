@@ -18,7 +18,7 @@ export const FindUsSection: React.FC = () => {
             Visit Our Store
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900 mb-3">
-            Find Us in Pulwama
+            Find Us in Shalina
           </h2>
           <p className="text-sm text-stone-600">
             Located conveniently on Circular Road, near Mazban Hotel. Come explore our full Kashmiri traditional, bridal, and contemporary collections in person.
@@ -122,7 +122,7 @@ export const FindUsSection: React.FC = () => {
               {/* Responsive Google Maps Iframe */}
               <iframe
                 title="Pioneer Clothing House Location Map"
-                src="https://maps.google.com/maps?q=Pulwama,+Circular+Road,+Near+Mazban+Hotel&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                src="https://www.google.co.in/maps/place/Shalina/@34.0270582,74.8979135,65m/data=!3m1!1e3!4m6!3m5!1s0x38e1894d7afbf8f5:0xe33e0dd34986148f!8m2!3d34.0203874!4d74.8755663!16s%2Fg%2F12ht8y344?entry=ttu&g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D"
                 className="w-full h-full min-h-[300px] border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -131,7 +131,7 @@ export const FindUsSection: React.FC = () => {
               {/* Map Float Pill */}
               <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-lg shadow-md border border-stone-200 text-xs font-semibold text-stone-900 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-amber-700" />
-                <span>Circular Road, Near Mazban Hotel, Pulwama</span>
+                <span>Shalina, Budgam, J&K, India</span>
               </div>
             </div>
 

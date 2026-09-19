@@ -18,11 +18,11 @@ export function sanitizeWhatsAppNumber(phone: string): string {
 }
 
 /**
- * Builds the official WhatsApp Order confirmation message for Pioneer Clothing House
+ * Builds the official WhatsApp Order confirmation message for Zenith Apparel & Footwear Clothing House
  */
 export function buildOrderWhatsAppMessage(order: Order): string {
   const lines: string[] = [
-    '*Pioneer Clothing House — New Order*',
+    '*Zenith Apparel & Footwear Clothing House — New Order*',
     '--------------------------------',
     `*Order ID:* ${order.orderNumber}`,
     `*Customer Name:* ${order.customerName}`,
@@ -80,7 +80,7 @@ export function buildOrderWhatsAppMessage(order: Order): string {
 
   lines.push(
     '--------------------------------',
-    'Thank you for ordering with Pioneer Clothing House!'
+    'Thank you for ordering with Zenith Apparel & Footwear Clothing House!'
   );
 
   return lines.join('\n');

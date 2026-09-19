@@ -41,7 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
           textAlign: 'center'
         }}>
           <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#881337', marginBottom: '8px' }}>
-            Pioneer Clothing House — Pulwama
+            Zenith Apparel & Footwear — Shalina
           </h1>
           <p style={{ color: '#57534e', marginBottom: '16px', maxWidth: '480px', fontSize: '14px' }}>
             The application encountered a temporary issue while loading. Please refresh or reset to the homepage.

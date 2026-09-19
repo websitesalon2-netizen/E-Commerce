@@ -41,79 +41,82 @@ export const HomePage: React.FC<HomePageProps> = ({
     <div id="home-page" className="space-y-16">
       
       {/* Hero Banner Section */}
-      <section 
-        id="hero-banner-section" 
-        className="relative bg-stone-900 text-white min-h-[520px] lg:min-h-[600px] flex items-center overflow-hidden"
-      >
-        {/* Background Image with Dark Vignette */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src={websiteContent.heroImageUrl || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1920&q=85'}
-            alt="Zenith Apparel & Footwear Clothing House Hero Collection"
-            className="w-full h-full object-cover object-center opacity-40 scale-102 transition-transform duration-1000"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/80 to-stone-950/40" />
+<section 
+  id="hero-banner-section" 
+  style={{ backgroundColor: '#F4F8F5' }}
+  className="relative text-stone-900 min-h-[520px] lg:min-h-[600px] flex items-center overflow-hidden"
+>
+  {/* Background Image with Soft Light Gradient */}
+  <div className="absolute inset-0 z-0">
+    <img
+      src={websiteContent.heroImageUrl || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1920&q=85'}
+      alt="Zenith Apparel & Footwear Clothing House Hero Collection"
+      className="w-full h-full object-cover object-center opacity-15 scale-102 transition-transform duration-1000"
+    />
+    <div 
+      className="absolute inset-0 bg-gradient-to-r from-[#F4F8F5] via-[#F4F8F5]/90 to-transparent" 
+    />
+  </div>
+
+  {/* Hero Content Container */}
+  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-28 w-full">
+    <div className="max-w-2xl space-y-6">
+      
+      {/* Eyebrow Badge */}
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-900/10 border border-amber-800/20 text-amber-900 text-xs font-semibold backdrop-blur-xs">
+        <Sparkles className="w-3.5 h-3.5" />
+        <span>{siteSettings.shopName} {siteSettings.subtitle} • Shalina</span>
+      </div>
+
+      {/* Main Headline */}
+      <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900 leading-[1.15]">
+        {websiteContent.heroTitle || 'Elegance Woven for Every Season'}
+      </h1>
+
+      {/* Subtitle */}
+      <p className="text-base sm:text-lg text-stone-700 font-light leading-relaxed">
+        {websiteContent.heroSubtitle || 'Discover authentic Kashmiri woolen pherans, hand-embroidered tilla collections, fine shawls, and tailored men’s suits at Shalina’s premier fashion destination.'}
+      </p>
+
+      {/* CTAs */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
+        <button
+          id="hero-shop-now-btn"
+          onClick={() => onNavigate('#/shop')}
+          className="px-8 py-3.5 bg-amber-800 hover:bg-amber-700 text-white rounded-xl text-sm font-semibold shadow-md transition flex items-center justify-center gap-2 cursor-pointer group"
+        >
+          <span>{websiteContent.heroCtaText || 'Explore Collection'}</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </button>
+
+        <button
+          id="hero-find-us-btn"
+          onClick={() => onNavigate('#/find-us')}
+          className="px-6 py-3.5 bg-white/80 hover:bg-white text-stone-900 border border-stone-300 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>Visit Shalina Store</span>
+        </button>
+      </div>
+
+      {/* Fast Stats */}
+      <div className="pt-6 border-t border-stone-300/70 flex items-center gap-8 text-xs text-stone-600">
+        <div>
+          <span className="block font-bold text-stone-900 text-base">100%</span>
+          <span>Authentic Kashmiri Craft</span>
         </div>
-
-        {/* Hero Content Container */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-28 w-full">
-          <div className="max-w-2xl space-y-6">
-            
-            {/* Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-600/50 text-amber-300 text-xs font-semibold backdrop-blur-xs">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{siteSettings.shopName} {siteSettings.subtitle} • Shalina</span>
-            </div>
-
-            {/* Main Headline */}
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.15]">
-              {websiteContent.heroTitle || 'Elegance Woven for Every Season'}
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-base sm:text-lg text-stone-300 font-light leading-relaxed">
-              {websiteContent.heroSubtitle || 'Discover authentic Kashmiri woolen pherans, hand-embroidered tilla collections, fine shawls, and tailored men’s suits at Shalina’s premier fashion destination.'}
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
-              <button
-                id="hero-shop-now-btn"
-                onClick={() => onNavigate('#/shop')}
-                className="px-8 py-3.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold shadow-lg transition flex items-center justify-center gap-2 cursor-pointer group"
-              >
-                <span>{websiteContent.heroCtaText || 'Explore Collection'}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <button
-                id="hero-find-us-btn"
-                onClick={() => onNavigate('#/find-us')}
-                className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-sm font-semibold backdrop-blur-xs transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Visit Shalina Store</span>
-              </button>
-            </div>
-
-            {/* Fast Stats */}
-            <div className="pt-6 border-t border-stone-800 flex items-center gap-8 text-xs text-stone-400">
-              <div>
-                <span className="block font-bold text-white text-base">100%</span>
-                <span>Authentic Kashmiri Craft</span>
-              </div>
-              <div className="border-l border-stone-800 pl-8">
-                <span className="block font-bold text-white text-base">₹0</span>
-                <span>Delivery Over ₹{deliverySettings.freeDeliveryThreshold}</span>
-              </div>
-              <div className="border-l border-stone-800 pl-8">
-                <span className="block font-bold text-white text-base">{deliverySettings.codRadiusKm} km</span>
-                <span>COD Radius Shalina</span>
-              </div>
-            </div>
-
-          </div>
+        <div className="border-l border-stone-300/70 pl-8">
+          <span className="block font-bold text-stone-900 text-base">₹0</span>
+          <span>Delivery Over ₹{deliverySettings.freeDeliveryThreshold}</span>
         </div>
-      </section>
+        <div className="border-l border-stone-300/70 pl-8">
+          <span className="block font-bold text-stone-900 text-base">{deliverySettings.codRadiusKm} km</span>
+          <span>COD Radius Shalina</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
       {/* Trust & Guarantee Strip */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">

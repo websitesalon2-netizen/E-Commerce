@@ -247,10 +247,10 @@ export const INITIAL_PRODUCTS: Product[] = [
 ];
 
 export const INITIAL_SITE_SETTINGS: SiteSettings = {
-  shopName: 'Pioneer',
+  shopName: 'Zenith Apparel & Footwear',
   subtitle: 'Clothing House',
-  seoTitle: 'Pioneer Clothing House — Pulwama',
-  seoDescription: 'Premium clothing store in Pulwama, Circular Road, Near Mazban Hotel - 192121. Men, women, and traditional Kashmiri apparel.',
+  seoTitle: 'Zenith Apparel & Footwear Clothing House — Shalina',
+  seoDescription: 'Premium clothing store in Shalina, Budgam, J&K, India - 192121. Men, women, and traditional Kashmiri apparel.',
 };
 
 export const INITIAL_PAYMENT_SETTINGS: PaymentSettings = {
@@ -267,16 +267,16 @@ export const INITIAL_DELIVERY_SETTINGS: DeliverySettings = {
   codRadiusKm: 10,
   deliveryAvailable: true,
   onlineOrdersOpen: true,
-  orderClosedMessage: 'Online orders are currently closed. Please contact Pioneer Clothing House directly on WhatsApp or visit our store in Pulwama.',
+  orderClosedMessage: 'Online orders are currently closed. Please contact Pioneer Clothing House directly on WhatsApp or visit our store in Shalina.',
 };
 
 export const INITIAL_CONTACT_SETTINGS: ContactSettings = {
   phone: '+91 9622229622',
   whatsapp: '+91 9622229622',
-  address: 'Pulwama, Circular Road, Near Mazban Hotel - 192121',
+  address: 'Shalina, Budgam, J&K, india - 192121',
   pinCode: '192121',
-  googleMapsUrl: 'https://maps.google.com/?q=Pulwama,+Circular+Road,+Near+Mazban+Hotel',
-  email: 'pioneerclothingpulwama@gmail.com',
+  googleMapsUrl: 'https://www.google.co.in/maps/place/Shalina/@34.0270582,74.8979135,65m/data=!3m1!1e3!4m6!3m5!1s0x38e1894d7afbf8f5:0xe33e0dd34986148f!8m2!3d34.0203874!4d74.8755663!16s%2Fg%2F12ht8y344?entry=ttu&g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D',
+  email: 'hussainishujaat14@gmail.com',
 };
 
 export const INITIAL_BUSINESS_HOURS: BusinessHours = {
@@ -301,15 +301,15 @@ export const INITIAL_THEME_SETTINGS: ThemeSettings = {
 
 export const INITIAL_WEBSITE_CONTENT: WebsiteContent = {
   heroTitle: 'Elegance Woven for Every Season',
-  heroSubtitle: 'Discover the premier collection of authentic Kashmiri Pherans, master-tailored men’s suits, and exquisite designer wear at Pulwama’s trusted clothing house.',
+  heroSubtitle: 'Discover the premier collection of authentic Kashmiri Pherans, master-tailored men’s suits, and exquisite designer wear at Shalina’s trusted clothing house.',
   heroCtaText: 'Explore Collection',
-  promoBannerText: '✨ Special Festive Offer: Free Express Delivery Across Pulwama & Kashmir on Orders Above ₹1,999!',
+  promoBannerText: '✨ Special Festive Offer: Free Express Delivery Across Shalina & Kashmir on Orders Above ₹1,999!',
   aboutTitle: 'About Pioneer Clothing House',
-  aboutText: 'Established at Circular Road, Near Mazban Hotel in the heart of Pulwama, Pioneer Clothing House represents an unwavering commitment to quality fabric, authentic craftsmanship, and honest prices. From heirloom Kashmiri woolen pherans to contemporary formal suits and festive attire, we dress you with pride and warmth.',
-  contactHeading: 'Visit Our Pulwama Store',
+  aboutText: 'Established at Shalina, Budgam in the heart of J&K, Zenith Apparel & Footwear represents an unwavering commitment to quality fabric, authentic craftsmanship, and honest prices. From heirloom Kashmiri woolen pherans to contemporary formal suits and festive attire, we dress you with pride and warmth.',
+  contactHeading: 'Visit Our Shalina Store',
   contactDescription: 'Experience our full collection in person or order online for fast home delivery across Jammu & Kashmir and India.',
-  footerText: 'Pioneer Clothing House — Pulwama, Circular Road, Near Mazban Hotel - 192121. Premium clothing for men, women, and families.',
-  deliveryPolicy: 'We provide prompt delivery within Pulwama and surrounding areas. Standard delivery is ₹50 and free for orders over ₹1,999. Cash on Delivery (COD) is available within a 10 km radius of our store.',
+  footerText: 'Zenith Apparel & Footwear — Shalina, Budgam, J&K, india - 192121. Premium clothing for men, women, and families.',
+  deliveryPolicy: 'We provide prompt delivery within Shalina and surrounding areas. Standard delivery is ₹50 and free for orders over ₹1,999. Cash on Delivery (COD) is available within a 10 km radius of our store.',
   returnPolicy: 'We want you to love your purchase. If a garment does not fit or arrives damaged, request an exchange or return within 7 days of delivery with original tags intact.',
   termsConditions: 'All orders are subject to stock availability. Prices are listed in Indian Rupees (INR / ₹) and inclusive of all applicable taxes.',
   privacyPolicy: 'Your personal information (name, address, mobile number) is used solely to process your orders and coordinate delivery. We never share your data with unauthorized third parties.',

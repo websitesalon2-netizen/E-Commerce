@@ -22,7 +22,7 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error in Pioneer Clothing House application:', error, errorInfo);
+    console.error('Uncaught error in Zenith Apparel & Footwear Clothing House application:', error, errorInfo);
   }
 
   public render() {
@@ -100,9 +100,9 @@ try {
   }
 } catch (mountError) {
   console.error('Fatal initialization error:', mountError);
-  const splash = document.getElementById('pioneer-initial-splash');
+  const splash = document.getElementById('Zenith Apparel & Footwear-initial-splash');
   if (splash) {
-    const errorNotice = document.getElementById('pioneer-splash-error');
+    const errorNotice = document.getElementById('Zenith Apparel & Footwear-splash-error');
     if (errorNotice) errorNotice.style.display = 'block';
   }
 }

@@ -25,7 +25,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   const { siteSettings, contactSettings, businessHours, websiteContent } = useStore();
 
-  const shopWhatsAppUrl = `https://wa.me/${sanitizeWhatsAppNumber(contactSettings.whatsapp)}?text=${encodeURIComponent('Hello Pioneer Clothing House, I have an inquiry regarding your clothing collection.')}`;
+  const shopWhatsAppUrl = `https://wa.me/${sanitizeWhatsAppNumber(contactSettings.whatsapp)}?text=${encodeURIComponent('Hello Zenith Apparel & Footwear Clothing House, I have an inquiry regarding your clothing collection.')}`;
   const developerWhatsAppUrl = getDeveloperWhatsAppUrl();
 
   return (
@@ -43,7 +43,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </div>
               <div>
                 <span className="font-serif text-xl font-bold text-white block">
-                  {siteSettings.shopName || 'Pioneer'}
+                  {siteSettings.shopName || 'Zenith Apparel & Footwear'}
                 </span>
                 <span className="text-[10px] uppercase tracking-widest text-stone-400 font-medium block">
                   {siteSettings.subtitle || 'Clothing House'}

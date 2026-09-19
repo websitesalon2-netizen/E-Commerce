@@ -112,9 +112,9 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | null>(null);
 
-const LS_CART = 'pioneer_cart';
-const LS_MGR_PASS = 'pioneer_mgr_pass_hash';
-const LS_DEV_PASS = 'pioneer_dev_pass_hash';
+const LS_CART = 'Zenith Apparel & Footwear_cart';
+const LS_MGR_PASS = 'Zenith Apparel & Footwear_mgr_pass_hash';
+const LS_DEV_PASS = 'Zenith Apparel & Footwear_dev_pass_hash';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -207,11 +207,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         loadAllData();
       }
     };
-    window.addEventListener('pioneer_storage_update', handleStorageUpdate);
+    window.addEventListener('Zenith Apparel & Footwear_storage_update', handleStorageUpdate);
     window.addEventListener('storage', loadAllData);
 
     return () => {
-      window.removeEventListener('pioneer_storage_update', handleStorageUpdate);
+      window.removeEventListener('Zenith Apparel & Footwear_storage_update', handleStorageUpdate);
       window.removeEventListener('storage', loadAllData);
     };
   }, [loadAllData]);
@@ -464,7 +464,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const loginManager = (password: string): boolean => {
-    const stored = getStoredPassword(LS_MGR_PASS, 'pioneer123');
+    const stored = getStoredPassword(LS_MGR_PASS, 'zenith123');
     if (password === stored) {
       setCurrentUserRole('manager');
       return true;
@@ -473,7 +473,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const loginDeveloper = (password: string): boolean => {
-    const stored = getStoredPassword(LS_DEV_PASS, 'devpioneer123');
+    const stored = getStoredPassword(LS_DEV_PASS, 'developer123');
     if (password === stored) {
       setCurrentUserRole('developer');
       return true;
@@ -486,7 +486,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const changeManagerPassword = (oldPass: string, newPass: string) => {
-    const stored = getStoredPassword(LS_MGR_PASS, 'pioneer123');
+    const stored = getStoredPassword(LS_MGR_PASS, 'zenith123');
     if (oldPass !== stored) {
       return { success: false, message: 'Current manager password is incorrect.' };
     }
@@ -498,7 +498,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const changeDeveloperPassword = (oldPass: string, newPass: string) => {
-    const stored = getStoredPassword(LS_DEV_PASS, 'devpioneer123');
+    const stored = getStoredPassword(LS_DEV_PASS, 'developer123');
     if (oldPass !== stored) {
       return { success: false, message: 'Current developer password is incorrect.' };
     }

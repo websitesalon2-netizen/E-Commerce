@@ -122,7 +122,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Settings States
+  // Settings States with baseline fallbacks
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
   const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>(INITIAL_PAYMENT_SETTINGS);
   const [deliverySettings, setDeliverySettings] = useState<DeliverySettings>(INITIAL_DELIVERY_SETTINGS);
@@ -147,11 +147,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Apply theme settings to CSS custom properties
   useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty('--color-primary', themeSettings.primaryColor);
-    root.style.setProperty('--color-secondary', themeSettings.secondaryColor);
-    root.style.setProperty('--color-accent', themeSettings.accentColor);
-    root.style.setProperty('--color-btn', themeSettings.buttonColor);
-    root.style.setProperty('--radius-brand', themeSettings.borderRadius);
+    if (themeSettings) {
+      root.style.setProperty('--color-primary', themeSettings.primaryColor || '#800020');
+      root.style.setProperty('--color-secondary', themeSettings.secondaryColor || '#D4AF37');
+      root.style.setProperty('--color-accent', themeSettings.accentColor || '#F5F5DC');
+      root.style.setProperty('--color-btn', themeSettings.buttonColor || '#800020');
+      root.style.setProperty('--radius-brand', themeSettings.borderRadius || '8px');
+    }
   }, [themeSettings]);
 
   // Persist cart
@@ -180,16 +182,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         fetchSettings<WebsiteContent>('content', INITIAL_WEBSITE_CONTENT),
       ]);
 
-      setProducts(prods);
-      setCategories(cats);
-      setOrders(ords);
-      setSiteSettings(site);
-      setPaymentSettings(payment);
-      setDeliverySettings(delivery);
-      setContactSettings(contact);
-      setBusinessHours(hours);
-      setThemeSettings(theme);
-      setWebsiteContent(content);
+      if (Array.isArray(prods) && prods.length > 0) setProducts(prods);
+      if (Array.isArray(cats) && cats.length > 0) setCategories(cats);
+      if (Array.isArray(ords)) setOrders(ords);
+
+      // Safe deep merges to eliminate undefined access crash
+      setSiteSettings({ ...INITIAL_SITE_SETTINGS, ...(site || {}) });
+      setPaymentSettings({ ...INITIAL_PAYMENT_SETTINGS, ...(payment || {}) });
+      setDeliverySettings({ ...INITIAL_DELIVERY_SETTINGS, ...(delivery || {}) });
+      setContactSettings({ ...INITIAL_CONTACT_SETTINGS, ...(contact || {}) });
+      setBusinessHours({ ...INITIAL_BUSINESS_HOURS, ...(hours || {}) });
+      setThemeSettings({ ...INITIAL_THEME_SETTINGS, ...(theme || {}) });
+      setWebsiteContent({ ...INITIAL_WEBSITE_CONTENT, ...(content || {}) });
     } catch (error) {
       console.error('Failed to load store data:', error);
     } finally {
@@ -200,7 +204,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     loadAllData();
 
-    // Listen to inter-tab / window storage events for real-time reactivity
     const handleStorageUpdate = (e: Event) => {
       const customEvent = e as CustomEvent<{ key?: string }>;
       if (customEvent.detail?.key) {
@@ -219,8 +222,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Catalog Methods
   const refreshCatalog = async () => {
     const [prods, cats] = await Promise.all([fetchProducts(), fetchCategories()]);
-    setProducts(prods);
-    setCategories(cats);
+    if (Array.isArray(prods) && prods.length > 0) setProducts(prods);
+    if (Array.isArray(cats) && cats.length > 0) setCategories(cats);
   };
 
   const handleSaveProduct = async (productData: Partial<Product>) => {
@@ -279,7 +282,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return { success: false, message: 'Sorry, this product is currently out of stock.' };
     }
 
-    // Check if variant already exists in cart
     const existingIndex = cart.findIndex(
       item => item.product.id === product.id &&
               item.selectedSize === size &&
@@ -329,26 +331,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const cartSubtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
 
-  // Delivery charge calculation
   const deliveryCharge = cart.length === 0 ? 0 : (
-    deliverySettings.freeDeliveryThreshold > 0 && cartSubtotal >= deliverySettings.freeDeliveryThreshold
+    (deliverySettings?.freeDeliveryThreshold ?? 0) > 0 && cartSubtotal >= (deliverySettings?.freeDeliveryThreshold ?? 0)
       ? 0
-      : deliverySettings.deliveryCharge
+      : (deliverySettings?.deliveryCharge ?? 0)
   );
 
   const cartGrandTotal = cartSubtotal + deliveryCharge;
 
-  // COD Radius Evaluation
   const isCodEligible = (distanceKm?: number): boolean => {
-    if (!paymentSettings.codEnabled) return false;
+    if (!paymentSettings?.codEnabled) return false;
     if (distanceKm === undefined || distanceKm === null) {
-      // Default assume within service area if not specified
       return true;
     }
-    return distanceKm <= deliverySettings.codRadiusKm;
+    return distanceKm <= (deliverySettings?.codRadiusKm ?? 10);
   };
 
-  // Order Placement with Price Snapshot & Stock Deduction
   const placeOrder = async (orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt'>): Promise<Order> => {
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -363,10 +361,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       updatedAt: now,
     };
 
-    // Save order
     await apiCreateOrder(newOrder);
 
-    // Deduct stock in real-time
     for (const item of newOrder.items) {
       const product = products.find(p => p.id === item.productId);
       if (product) {
@@ -380,7 +376,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
 
-    // Refresh orders and catalog
     await Promise.all([refreshOrders(), refreshCatalog()]);
     clearCart();
 
@@ -389,18 +384,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const refreshOrders = async () => {
     const ords = await fetchOrders();
-    setOrders(ords);
+    if (Array.isArray(ords)) setOrders(ords);
   };
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus, internalNotes?: string) => {
     await apiUpdateOrderStatus(orderId, status, internalNotes);
     await refreshOrders();
   };
-  
+
   const deleteOrder = async (orderId: string) => {
-  await apiDeleteOrder(orderId);
-  await refreshOrders();
-};
+    await apiDeleteOrder(orderId);
+    await refreshOrders();
+  };
 
   // Settings Updaters
   const updateSiteSettings = async (data: Partial<SiteSettings>) => {
@@ -428,8 +423,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateBusinessHours = async (data: BusinessHours) => {
-    setBusinessHours(data);
-    await apiSaveSettings('businessHours', data);
+    const updated = { ...businessHours, ...data };
+    setBusinessHours(updated);
+    await apiSaveSettings('businessHours', updated);
   };
 
   const updateThemeSettings = async (data: Partial<ThemeSettings>) => {
@@ -449,12 +445,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await apiSaveSettings('content', updated);
   };
 
-  // File Upload Helper
   const uploadImage = async (file: File, folder: string, onProgress?: (p: number) => void): Promise<string> => {
     return await uploadDeviceImage(file, folder, onProgress);
   };
 
-  // Authentication Helpers (Salted Hash Simulation for secure admin logins)
   const getStoredPassword = (key: string, fallback: string): string => {
     try {
       return localStorage.getItem(key) || fallback;

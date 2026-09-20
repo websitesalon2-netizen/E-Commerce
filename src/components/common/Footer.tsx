@@ -1,13 +1,13 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
-import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Clock, ShieldCheck, Code } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (route: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
-  const { siteSettings, contactSettings, businessHours } = useStore();
+  const { siteSettings } = useStore();
 
   return (
     <footer className="w-full max-w-full bg-stone-900 text-stone-300 pt-12 pb-28 lg:pb-12 border-t border-stone-800">
@@ -63,10 +63,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </ul>
           </div>
 
-          {/* Column 3: Customer Care */}
+          {/* Column 3: Customer Care & Portal Links */}
           <div>
             <h3 className="text-white text-sm font-semibold tracking-wider uppercase mb-4">
-              Customer Care & Policies
+              Customer Care & Desks
             </h3>
             <ul className="space-y-2 text-sm text-stone-400">
               <li>
@@ -80,18 +80,25 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('#/policies?tab=terms')} className="hover:text-amber-400 transition-colors">
-                  Terms & Conditions
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate('#/policies?tab=privacy')} className="hover:text-amber-400 transition-colors">
-                  Privacy Policy
-                </button>
-              </li>
-              <li>
                 <button onClick={() => onNavigate('#/find-us')} className="hover:text-amber-400 transition-colors">
                   Find Us in Shalina
+                </button>
+              </li>
+              {/* STAFF & DEVELOPER ACCESS LINKS */}
+              <li className="pt-2 border-t border-stone-800 flex flex-col gap-1.5">
+                <button 
+                  onClick={() => onNavigate('#/manager')} 
+                  className="inline-flex items-center gap-1.5 text-amber-400 hover:text-amber-300 font-medium text-xs transition-colors"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Manager Desk Access
+                </button>
+                <button 
+                  onClick={() => onNavigate('#/developer')} 
+                  className="inline-flex items-center gap-1.5 text-stone-400 hover:text-stone-200 font-medium text-xs transition-colors"
+                >
+                  <Code className="w-3.5 h-3.5 text-amber-500" />
+                  Developer Desk Access
                 </button>
               </li>
             </ul>
@@ -105,15 +112,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </h3>
             <div className="text-sm text-stone-400 space-y-1.5 mb-4">
               <div className="flex justify-between">
-                <span>Monday - Thursday</span>
-                <span>09:30 - 20:30</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Friday</span>
-                <span>09:30 - 20:30</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Saturday</span>
+                <span>Mon - Sat</span>
                 <span>09:30 - 20:30</span>
               </div>
               <div className="flex justify-between">
@@ -128,13 +127,19 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         </div>
 
-        {/* Bottom Bar: Copyright & Developer Credit Line */}
+        {/* Bottom Bar: Copyright & Developer Credit */}
         <div className="border-t border-stone-800 pt-6 mt-6 text-center text-xs text-stone-400 space-y-2">
           <p>© 2026 Zenith Apparel & Footwear Clothing House. All rights reserved. Prices in INR (₹).</p>
           
-          {/* MANDATORY DEVELOPER CREDIT - VISIBLE & CLEAR */}
-          <p className="text-amber-400 font-semibold tracking-wide text-xs pt-1">
-            Website Developed by <span className="text-white font-bold underline decoration-amber-500">Shujaat</span>
+          {/* DEVELOPER CREDIT WITH ROUTE TRIGGER */}
+          <p className="text-stone-400 font-medium tracking-wide text-xs pt-1">
+            Website Developed by{' '}
+            <button 
+              onClick={() => onNavigate('#/developer')}
+              className="text-amber-400 hover:text-amber-300 font-bold underline decoration-amber-500 transition-colors"
+            >
+              Shujaat
+            </button>
           </p>
         </div>
 

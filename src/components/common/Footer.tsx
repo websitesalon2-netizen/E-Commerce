@@ -1,269 +1,141 @@
 import React from 'react';
-import { 
-  MapPin, 
-  Phone, 
-  MessageCircle, 
-  Clock, 
-  ExternalLink, 
-  ShieldCheck, 
-  Truck, 
-  RotateCcw, 
-  CheckCircle2,
-  Heart
-} from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
-import { 
-  getDeveloperWhatsAppUrl, 
-  DEVELOPER_WHATSAPP_DISPLAY,
-  sanitizeWhatsAppNumber 
-} from '../../lib/whatsapp';
+import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (route: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
-  const { siteSettings, contactSettings, businessHours, websiteContent } = useStore();
-
-  const shopWhatsAppUrl = `https://wa.me/${sanitizeWhatsAppNumber(contactSettings.whatsapp)}?text=${encodeURIComponent('Hello Zenith Apparel & Footwear Clothing House, I have an inquiry regarding your clothing collection.')}`;
-  const developerWhatsAppUrl = getDeveloperWhatsAppUrl();
+  const { siteSettings, contactSettings, businessHours } = useStore();
 
   return (
-    <footer id="main-site-footer" className="bg-stone-900 text-stone-300 pt-16 pb-10 border-t border-stone-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-stone-800">
+    <footer className="w-full max-w-full bg-stone-900 text-stone-300 pt-12 pb-28 lg:pb-12 border-t border-stone-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           
-          {/* Col 1: Shop Brand & Address */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-amber-950 border border-amber-600/40 flex items-center justify-center text-amber-400 font-serif font-bold text-lg">
+          {/* Column 1: Store Intro */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded bg-amber-900 flex items-center justify-center text-amber-400 font-serif font-bold text-lg">
                 P
               </div>
-              <div>
-                <span className="font-serif text-xl font-bold text-white block">
-                  {siteSettings.shopName || 'Zenith Apparel & Footwear'}
-                </span>
-                <span className="text-[10px] uppercase tracking-widest text-stone-400 font-medium block">
-                  {siteSettings.subtitle || 'Clothing House'}
-                </span>
-              </div>
+              <span className="font-serif font-bold text-lg text-white">
+                {siteSettings?.storeName || 'Zenith Apparel & Footwear'}
+              </span>
             </div>
-
-            <p className="text-sm text-stone-400 leading-relaxed">
-              {websiteContent.footerText || 'Premium clothing house in Shalina, offering exquisite Kashmiri woolen pherans, hand-embroidered shawls, executive suits, and festive traditional wear.'}
+            <p className="text-sm text-stone-400 leading-relaxed mb-4">
+              Authentic Kashmiri traditional wear, hand-crafted suits, premium wool shawls, and contemporary winter fashion in Shalina, Budgam.
             </p>
-
-            <div className="space-y-2.5 text-xs text-stone-300">
-              <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>{contactSettings.address}</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-amber-400 shrink-0" />
-                <a href={`tel:${contactSettings.phone}`} className="hover:text-white transition">
-                  {contactSettings.phone}
-                </a>
-              </div>
-            </div>
-
-            {/* Direct Action Buttons */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              <a
-                id="footer-whatsapp-chat-btn"
-                href={shopWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold transition"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                WhatsApp Shop
-              </a>
-              <a
-                id="footer-google-maps-btn"
-                href={contactSettings.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-medium transition"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-                Get Directions
-              </a>
-            </div>
           </div>
 
-          {/* Col 2: Store Collections */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-white">
-              Collections
-            </h4>
+          {/* Column 2: Quick Links */}
+          <div>
+            <h3 className="text-white text-sm font-semibold tracking-wider uppercase mb-4">
+              Explore Collections
+            </h3>
             <ul className="space-y-2 text-sm text-stone-400">
               <li>
-                <button 
-                  onClick={() => onNavigate('#/shop?category=traditional')}
-                  className="hover:text-amber-400 transition cursor-pointer text-left"
-                >
-                  Kashmiri Pherans & Tilla
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => onNavigate('#/shop?category=shawls')}
-                  className="hover:text-amber-400 transition cursor-pointer text-left"
-                >
+                <button onClick={() => onNavigate('#/shop?category=traditional')} className="hover:text-amber-400 transition-colors">
                   Pure Wool & Sozni Shawls
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/shop?category=mens')}
-                  className="hover:text-amber-400 transition cursor-pointer text-left"
-                >
+                <button onClick={() => onNavigate('#/shop?category=mens')} className="hover:text-amber-400 transition-colors">
                   Men's Formal Suits & Shirts
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/shop?category=womens')}
-                  className="hover:text-amber-400 transition cursor-pointer text-left"
-                >
+                <button onClick={() => onNavigate('#/shop?category=womens')} className="hover:text-amber-400 transition-colors">
                   Women's Velvet & Silk Suits
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/shop?category=jackets')}
-                  className="hover:text-amber-400 transition cursor-pointer text-left"
-                >
+                <button onClick={() => onNavigate('#/shop?category=jackets')} className="hover:text-amber-400 transition-colors">
                   Winter Jackets & Heavy Coats
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/shop?category=kids')}
-                  className="hover:text-amber-400 transition cursor-pointer text-left"
-                >
+                <button onClick={() => onNavigate('#/shop?category=kids')} className="hover:text-amber-400 transition-colors">
                   Kids Winter Wear
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Customer Care & Policies */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-white">
+          {/* Column 3: Customer Care */}
+          <div>
+            <h3 className="text-white text-sm font-semibold tracking-wider uppercase mb-4">
               Customer Care & Policies
-            </h4>
+            </h3>
             <ul className="space-y-2 text-sm text-stone-400">
               <li>
-                <button 
-                  onClick={() => onNavigate('#/policies?tab=delivery')}
-                  className="hover:text-amber-400 transition cursor-pointer flex items-center gap-2"
-                >
-                  <Truck className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Delivery & Shipping Policy</span>
+                <button onClick={() => onNavigate('#/policies?tab=delivery')} className="hover:text-amber-400 transition-colors">
+                  Delivery & Shipping Policy
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/policies?tab=returns')}
-                  className="hover:text-amber-400 transition cursor-pointer flex items-center gap-2"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Exchange & Return Policy</span>
+                <button onClick={() => onNavigate('#/policies?tab=returns')} className="hover:text-amber-400 transition-colors">
+                  Exchange & Return Policy
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/policies?tab=terms')}
-                  className="hover:text-amber-400 transition cursor-pointer flex items-center gap-2"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Terms & Conditions</span>
+                <button onClick={() => onNavigate('#/policies?tab=terms')} className="hover:text-amber-400 transition-colors">
+                  Terms & Conditions
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/policies?tab=privacy')}
-                  className="hover:text-amber-400 transition cursor-pointer flex items-center gap-2"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Privacy Policy</span>
+                <button onClick={() => onNavigate('#/policies?tab=privacy')} className="hover:text-amber-400 transition-colors">
+                  Privacy Policy
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => onNavigate('#/find-us')}
-                  className="hover:text-amber-400 transition cursor-pointer flex items-center gap-2"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Find Us in Shalina</span>
+                <button onClick={() => onNavigate('#/find-us')} className="hover:text-amber-400 transition-colors">
+                  Find Us in Shalina
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Business Hours */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-white flex items-center gap-2">
-              <Clock className="w-4 h-4 text-amber-400" />
-              <span>Store Hours (Shalina)</span>
-            </h4>
-            <div className="space-y-1.5 text-xs text-stone-400">
-              <div className="flex justify-between py-1 border-b border-stone-800">
-                <span>Monday – Thursday</span>
-                <span className="text-stone-200">
-                  {businessHours.monday.open ? `${businessHours.monday.openingTime} – ${businessHours.monday.closingTime}` : 'Closed'}
-                </span>
+          {/* Column 4: Hours & Address */}
+          <div>
+            <h3 className="text-white text-sm font-semibold tracking-wider uppercase mb-4 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-500" />
+              Store Hours (Shalina)
+            </h3>
+            <div className="text-sm text-stone-400 space-y-1.5 mb-4">
+              <div className="flex justify-between">
+                <span>Monday - Thursday</span>
+                <span>09:30 - 20:30</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-stone-800">
+              <div className="flex justify-between">
                 <span>Friday</span>
-                <span className="text-stone-200">
-                  {businessHours.friday.open ? `${businessHours.friday.openingTime} – ${businessHours.friday.closingTime}` : 'Closed'}
-                </span>
+                <span>09:30 - 20:30</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-stone-800">
+              <div className="flex justify-between">
                 <span>Saturday</span>
-                <span className="text-stone-200">
-                  {businessHours.saturday.open ? `${businessHours.saturday.openingTime} – ${businessHours.saturday.closingTime}` : 'Closed'}
-                </span>
+                <span>09:30 - 20:30</span>
               </div>
-              <div className="flex justify-between py-1">
+              <div className="flex justify-between">
                 <span>Sunday</span>
-                <span className="text-stone-200">
-                  {businessHours.sunday.open ? `${businessHours.sunday.openingTime} – ${businessHours.sunday.closingTime}` : 'Closed'}
-                </span>
+                <span>10:00 - 19:00</span>
               </div>
             </div>
-            <p className="text-[11px] text-stone-500 pt-2">
-              Shalina, Budgam, J&K, India - 192121.
+            <p className="text-xs text-stone-500">
+              {siteSettings?.address || 'Shalina, Budgam, J&K, India - 192121.'}
             </p>
           </div>
 
         </div>
 
-        {/* Bottom Bar with Mandatory Developer Credit */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-          <p>
-            © {new Date().getFullYear()} {siteSettings.shopName} {siteSettings.subtitle}. All rights reserved. Prices in INR (₹).
+        {/* Bottom Bar: Copyright & Developer Credit Line */}
+        <div className="border-t border-stone-800 pt-6 mt-6 text-center text-xs text-stone-400 space-y-2">
+          <p>© 2026 Zenith Apparel & Footwear Clothing House. All rights reserved. Prices in INR (₹).</p>
+          
+          {/* MANDATORY DEVELOPER CREDIT - VISIBLE & CLEAR */}
+          <p className="text-amber-400 font-semibold tracking-wide text-xs pt-1">
+            Website Developed by <span className="text-white font-bold underline decoration-amber-500">Shujaat</span>
           </p>
-
-          {/* Mandatory Section 47 Requirement: Developed by Shujaat */}
-          <div className="flex items-center gap-1.5">
-            <span>Website</span>
-            <a
-              id="developer-whatsapp-credit-link"
-              href={developerWhatsAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={`Discuss website with developer on WhatsApp: ${DEVELOPER_WHATSAPP_DISPLAY}`}
-              className="inline-flex items-center gap-1 font-semibold text-amber-400 hover:text-amber-300 underline decoration-amber-500/50 hover:decoration-amber-300 transition"
-            >
-              <span>Developed by Shujaat</span>
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
-            </a>
-          </div>
         </div>
 
       </div>

@@ -12,7 +12,6 @@ import {
   ThemeSettings, 
   WebsiteContent,
   UserRole,
-  PaymentMethod,
   OrderStatus
 } from '../types';
 import {
@@ -200,7 +199,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (Array.isArray(cats) && cats.length > 0) setCategories(cats);
       if (Array.isArray(ords)) setOrders(ords);
 
-      // Safe deep merges to eliminate undefined access crash
+      // Safe deep merges
       setSiteSettings({ ...INITIAL_SITE_SETTINGS, ...(site || {}) });
       setPaymentSettings({ ...INITIAL_PAYMENT_SETTINGS, ...(payment || {}) });
       setDeliverySettings({ ...INITIAL_DELIVERY_SETTINGS, ...(delivery || {}) });
@@ -576,7 +575,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         changeManagerPassword,
         changeDeveloperPassword,
 
-        isFirebaseLive: isFirebaseConfigured,
+        isFirebaseLive: isFirebaseConfigured(),
       }}
     >
       {children}

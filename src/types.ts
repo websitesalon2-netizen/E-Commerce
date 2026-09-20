@@ -93,9 +93,17 @@ export interface Order {
 
 export interface SiteSettings {
   shopName: string;
+  storeName?: string; // Backwards-compatibility alias
   subtitle: string;
+  tagline?: string;
   logoUrl?: string;
   faviconUrl?: string;
+  address?: string;
+  announcementText?: string;
+  enableAnnouncement?: boolean;
+  developerCreditName?: string;
+  developerCreditUrl?: string;
+  customCss?: string;
   seoTitle?: string;
   seoDescription?: string;
 }
@@ -131,6 +139,9 @@ export interface BusinessHours {
   friday: DayHours;
   saturday: DayHours;
   sunday: DayHours;
+  // Legacy string format fallback
+  openingTime?: string;
+  closingTime?: string;
 }
 
 export interface ContactSettings {
@@ -139,6 +150,7 @@ export interface ContactSettings {
   address: string;
   pinCode: string;
   googleMapsUrl: string;
+  googleMapsEmbedUrl?: string;
   email?: string;
 }
 
@@ -156,14 +168,18 @@ export interface WebsiteContent {
   heroTitle: string;
   heroSubtitle: string;
   heroCtaText: string;
+  heroButtonText?: string;
   heroImageUrl?: string;
   promoBannerText?: string;
   aboutTitle: string;
   aboutText: string;
+  aboutStory?: string;
+  aboutVision?: string;
   aboutImageUrl?: string;
   contactHeading: string;
   contactDescription: string;
   footerText: string;
+  footerTagline?: string;
   deliveryPolicy: string;
   returnPolicy: string;
   termsConditions: string;

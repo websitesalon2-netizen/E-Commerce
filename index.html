@@ -12,11 +12,19 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+
+    <!-- Favicon & Icon Configuration (Fixes 404 Error) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <script>
-      // Early route normalization: If landing on a path like /shop or /checkout without hash, redirect cleanly to hash route
+      // Early route normalization: Redirect direct route hits cleanly to hash routes
       (function() {
         try {
           var l = window.location;
@@ -39,7 +47,7 @@
         // Global uncaught error listener to display recovery UI if scripts fail
         window.addEventListener('error', function(err) {
           console.error('Zenith Apparel & Footwear app initialization error:', err);
-          var notice = document.getElementById('Zenith Apparel & Footwear-splash-error');
+          var notice = document.getElementById('zenith-splash-error');
           if (notice) notice.style.display = 'block';
         });
       })();
@@ -48,7 +56,7 @@
   <body class="bg-stone-50 text-stone-900 antialiased selection:bg-amber-900 selection:text-white">
     <div id="root">
       <!-- High-Speed Branded Splash Screen (Replaced automatically when React mounts) -->
-      <div id="Zenith Apparel & Footwear-initial-splash" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #fafaf9; color: #1c1917; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; padding: 24px; text-align: center;">
+      <div id="zenith-initial-splash" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #fafaf9; color: #1c1917; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; padding: 24px; text-align: center;">
         <div style="width: 72px; height: 72px; border-radius: 16px; background-color: #881337; color: #ffffff; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(136, 19, 55, 0.3); border: 2px solid #fbbf24;">
           <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 40px; font-weight: 700; line-height: 1;">P</span>
         </div>
@@ -69,7 +77,7 @@
         <p style="font-size: 13px; color: #a8a29e; margin: 0;">Opening store collection...</p>
 
         <!-- Slow mobile network fallback (reveals if React mount takes > 4s) -->
-        <div id="Zenith Apparel & Footwear-slow-connection-notice" style="display: none; margin-top: 28px; max-width: 320px; animation: ZenithApparelFootwearFadeIn 0.3s ease-out;">
+        <div id="zenith-slow-connection-notice" style="display: none; margin-top: 28px; max-width: 320px; animation: ZenithApparelFootwearFadeIn 0.3s ease-out;">
           <p style="font-size: 12px; color: #78716c; margin-bottom: 12px;">
             Opening taking longer than usual?
           </p>
@@ -84,7 +92,7 @@
         </div>
 
         <!-- Global script error notice -->
-        <div id="Zenith Apparel & Footwear-splash-error" style="display: none; margin-top: 24px; padding: 12px 16px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; max-width: 320px;">
+        <div id="zenith-splash-error" style="display: none; margin-top: 24px; padding: 12px 16px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; max-width: 320px;">
           <p style="font-size: 12px; color: #991b1b; margin: 0 0 10px 0; font-weight: 500;">
             A connection hiccup occurred while opening the store.
           </p>
@@ -107,7 +115,7 @@
 
       <script>
         setTimeout(function() {
-          var notice = document.getElementById('Zenith Apparel & Footwear-slow-connection-notice');
+          var notice = document.getElementById('zenith-slow-connection-notice');
           if (notice) notice.style.display = 'block';
         }, 4000);
       </script>
@@ -115,4 +123,3 @@
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
-

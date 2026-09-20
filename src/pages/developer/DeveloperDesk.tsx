@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { 
   Globe, 
@@ -23,6 +23,21 @@ export const DeveloperDesk: React.FC = () => {
   const [hoursForm, setHoursForm] = useState({ ...(store.businessHours || {}) });
   const [themeForm, setThemeForm] = useState({ ...(store.themeSettings || {}) });
   const [contentForm, setContentForm] = useState({ ...(store.websiteContent || {}) });
+
+  // Sync state once Firestore data finishes loading
+  useEffect(() => {
+    if (store.siteSettings) setSiteForm({ ...store.siteSettings });
+    if (store.contactSettings) setContactForm({ ...store.contactSettings });
+    if (store.businessHours) setHoursForm({ ...store.businessHours });
+    if (store.themeSettings) setThemeForm({ ...store.themeSettings });
+    if (store.websiteContent) setContentForm({ ...store.websiteContent });
+  }, [
+    store.siteSettings,
+    store.contactSettings,
+    store.businessHours,
+    store.themeSettings,
+    store.websiteContent
+  ]);
 
   if (store.currentUserRole !== 'developer') {
     return (

@@ -43,6 +43,20 @@ import {
   INITIAL_WEBSITE_CONTENT
 } from '../data/seedData';
 
+// Recursive helper to ensure no 'undefined' values reach Firestore operations
+const cleanPayload = (obj: any): any => {
+  if (obj === null || obj === undefined) return '';
+  if (typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(cleanPayload);
+
+  const cleaned: Record<string, any> = {};
+  for (const key of Object.keys(obj)) {
+    const val = obj[key];
+    cleaned[key] = val === undefined ? '' : cleanPayload(val);
+  }
+  return cleaned;
+};
+
 interface StoreContextType {
   // Catalog
   products: Product[];
@@ -112,9 +126,9 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | null>(null);
 
-const LS_CART = 'Zenith Apparel & Footwear_cart';
-const LS_MGR_PASS = 'Zenith Apparel & Footwear_mgr_pass_hash';
-const LS_DEV_PASS = 'Zenith Apparel & Footwear_dev_pass_hash';
+const LS_CART = 'Zenith_Apparel_Footwear_cart';
+const LS_MGR_PASS = 'Zenith_Apparel_Footwear_mgr_pass_hash';
+const LS_DEV_PASS = 'Zenith_Apparel_Footwear_dev_pass_hash';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -210,11 +224,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         loadAllData();
       }
     };
-    window.addEventListener('Zenith Apparel & Footwear_storage_update', handleStorageUpdate);
+    window.addEventListener('Zenith_Apparel_Footwear_storage_update', handleStorageUpdate);
     window.addEventListener('storage', loadAllData);
 
     return () => {
-      window.removeEventListener('Zenith Apparel & Footwear_storage_update', handleStorageUpdate);
+      window.removeEventListener('Zenith_Apparel_Footwear_storage_update', handleStorageUpdate);
       window.removeEventListener('storage', loadAllData);
     };
   }, [loadAllData]);
@@ -248,7 +262,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       createdAt: productData.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    await apiSaveProduct(fullProduct);
+    await apiSaveProduct(cleanPayload(fullProduct));
     await refreshCatalog();
   };
 
@@ -267,7 +281,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       order: categoryData.order ?? (categories.length + 1),
       isActive: categoryData.isActive !== false,
     };
-    await apiSaveCategory(fullCategory);
+    await apiSaveCategory(cleanPayload(fullCategory));
     await refreshCatalog();
   };
 
@@ -361,18 +375,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       updatedAt: now,
     };
 
-    await apiCreateOrder(newOrder);
+    await apiCreateOrder(cleanPayload(newOrder));
 
     for (const item of newOrder.items) {
       const product = products.find(p => p.id === item.productId);
       if (product) {
         const newStock = Math.max(0, product.stock - item.quantity);
-        await apiSaveProduct({
+        await apiSaveProduct(cleanPayload({
           ...product,
           stock: newStock,
           isAvailable: newStock > 0,
           updatedAt: now,
-        });
+        }));
       }
     }
 
@@ -397,52 +411,52 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await refreshOrders();
   };
 
-  // Settings Updaters
+  // Safe Settings Updaters using cleanPayload
   const updateSiteSettings = async (data: Partial<SiteSettings>) => {
     const updated = { ...siteSettings, ...data };
     setSiteSettings(updated);
-    await apiSaveSettings('site', updated);
+    await apiSaveSettings('site', cleanPayload(updated));
   };
 
   const updatePaymentSettings = async (data: Partial<PaymentSettings>) => {
     const updated = { ...paymentSettings, ...data };
     setPaymentSettings(updated);
-    await apiSaveSettings('payment', updated);
+    await apiSaveSettings('payment', cleanPayload(updated));
   };
 
   const updateDeliverySettings = async (data: Partial<DeliverySettings>) => {
     const updated = { ...deliverySettings, ...data };
     setDeliverySettings(updated);
-    await apiSaveSettings('delivery', updated);
+    await apiSaveSettings('delivery', cleanPayload(updated));
   };
 
   const updateContactSettings = async (data: Partial<ContactSettings>) => {
     const updated = { ...contactSettings, ...data };
     setContactSettings(updated);
-    await apiSaveSettings('contact', updated);
+    await apiSaveSettings('contact', cleanPayload(updated));
   };
 
   const updateBusinessHours = async (data: BusinessHours) => {
     const updated = { ...businessHours, ...data };
     setBusinessHours(updated);
-    await apiSaveSettings('businessHours', updated);
+    await apiSaveSettings('businessHours', cleanPayload(updated));
   };
 
   const updateThemeSettings = async (data: Partial<ThemeSettings>) => {
     const updated = { ...themeSettings, ...data };
     setThemeSettings(updated);
-    await apiSaveSettings('theme', updated);
+    await apiSaveSettings('theme', cleanPayload(updated));
   };
 
   const resetThemeToDefault = async () => {
     setThemeSettings(INITIAL_THEME_SETTINGS);
-    await apiSaveSettings('theme', INITIAL_THEME_SETTINGS);
+    await apiSaveSettings('theme', cleanPayload(INITIAL_THEME_SETTINGS));
   };
 
   const updateWebsiteContent = async (data: Partial<WebsiteContent>) => {
     const updated = { ...websiteContent, ...data };
     setWebsiteContent(updated);
-    await apiSaveSettings('content', updated);
+    await apiSaveSettings('content', cleanPayload(updated));
   };
 
   const uploadImage = async (file: File, folder: string, onProgress?: (p: number) => void): Promise<string> => {

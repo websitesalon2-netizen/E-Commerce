@@ -86,7 +86,7 @@ export default function App() {
 
   return (
     <StoreProvider>
-      <div className="min-h-screen flex flex-col bg-stone-50 font-sans text-stone-900 selection:bg-amber-900 selection:text-white antialiased">
+      <div className="min-h-screen flex flex-col bg-stone-50 font-sans text-stone-900 selection:bg-amber-900 selection:text-white antialiased overflow-x-hidden w-full max-w-full">
         
         {/* Offline Network Warning */}
         <OfflineBanner />
@@ -103,7 +103,7 @@ export default function App() {
         />
 
         {/* Dynamic Route View */}
-        <main className="flex-1 pb-16 lg:pb-0">
+        <main className="flex-1 pb-28 lg:pb-0 w-full max-w-full overflow-x-hidden">
           {/* Fallback to HomePage if route doesn't match any known page */}
           {(routeInfo.path === '#/' ||
             (routeInfo.path !== '#/shop' &&
@@ -192,7 +192,7 @@ export default function App() {
           )}
         </main>
 
-        {/* Global Footer (with Section 47 Mandatory Developer Credit) */}
+        {/* Global Footer */}
         <Footer onNavigate={navigateTo} />
 
         {/* Slide-over Shopping Cart Drawer */}

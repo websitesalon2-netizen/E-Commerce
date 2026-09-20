@@ -20,6 +20,15 @@ const firebaseConfig = {
   measurementId: "G-N5VXEQXSPF"
 };
 
+// Default fallback settings object to prevent null/undefined errors
+const defaultSettings = {
+  storeName: "Zenith Apparel & Footwear — Shalina",
+  phone: "+91-9622229622",
+  whatsapp: "+91-9622229622",
+  address: "Srinagar, J&K",
+  currency: "INR"
+};
+
 // Check if credentials are properly configured
 export const isFirebaseConfigured = () => {
   return Boolean(firebaseConfig.apiKey);
@@ -29,7 +38,7 @@ export const isFirebaseConfigured = () => {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
 
-// Helper to fetch entire collections from Firestore
+// Helper to fetch entire collections safely from Firestore
 const fetchCollection = async (collectionName: string) => {
   try {
     const querySnapshot = await getDocs(collection(db, collectionName));
@@ -79,13 +88,15 @@ export const fetchSettings = async () => {
   try {
     const snapshot = await getDocs(collection(db, "settings"));
     if (!snapshot.empty) {
-      return snapshot.docs[0].data();
+      return { ...defaultSettings, ...snapshot.docs[0].data() };
     }
   } catch (e) {
-    console.error("Error fetching settings:", e);
+    console.error("Error fetching settings from Firestore:", e);
   }
-  return null;
+  // Return default fallbacks if database document does not exist yet
+  return defaultSettings;
 };
+
 export const saveSettings = async (settings: any) => {
   const ref = doc(db, "settings", "global");
   await setDoc(ref, settings, { merge: true });

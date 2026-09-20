@@ -20,13 +20,20 @@ const firebaseConfig = {
   measurementId: "G-N5VXEQXSPF"
 };
 
-// Default fallback settings object to prevent null/undefined errors
+// Complete fallback settings structure matching all UI requirements
 const defaultSettings = {
   storeName: "Zenith Apparel & Footwear — Shalina",
   phone: "+91-9622229622",
   whatsapp: "+91-9622229622",
   address: "Srinagar, J&K",
-  currency: "INR"
+  currency: "INR",
+  openingTime: "09:00 AM",
+  closingTime: "09:00 PM",
+  businessHours: "9:00 AM - 9:00 PM",
+  timing: {
+    openingTime: "09:00 AM",
+    closingTime: "09:00 PM"
+  }
 };
 
 // Check if credentials are properly configured
@@ -88,12 +95,16 @@ export const fetchSettings = async () => {
   try {
     const snapshot = await getDocs(collection(db, "settings"));
     if (!snapshot.empty) {
-      return { ...defaultSettings, ...snapshot.docs[0].data() };
+      const liveData = snapshot.docs[0].data();
+      return { 
+        ...defaultSettings, 
+        ...liveData,
+        timing: { ...defaultSettings.timing, ...(liveData.timing || {}) } 
+      };
     }
   } catch (e) {
     console.error("Error fetching settings from Firestore:", e);
   }
-  // Return default fallbacks if database document does not exist yet
   return defaultSettings;
 };
 

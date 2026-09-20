@@ -26,15 +26,15 @@ export const defaultSettings = {
   address: "Srinagar, J&K",
   currency: "INR",
   openingTime: "09:00 AM",
-  closingTime: "09:00 PM",
-  businessHours: "9:00 AM - 9:00 PM",
+  closingTime: "10:00 PM",
+  businessHours: "9:00 AM - 10:00 PM",
   hours: {
     openingTime: "09:00 AM",
-    closingTime: "09:00 PM"
+    closingTime: "10:00 PM"
   },
   timing: {
     openingTime: "09:00 AM",
-    closingTime: "09:00 PM"
+    closingTime: "10:00 PM"
   }
 };
 
@@ -42,6 +42,12 @@ export const isFirebaseConfigured = () => Boolean(firebaseConfig.apiKey);
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
+
+// Helper to sanitize payload and remove undefined values before saving to Firestore
+const cleanPayload = (data: any) => {
+  if (!data || typeof data !== "object") return {};
+  return JSON.parse(JSON.stringify(data));
+};
 
 const fetchCollection = async (collectionName: string) => {
   try {
@@ -56,7 +62,7 @@ const fetchCollection = async (collectionName: string) => {
 export const fetchProducts = () => fetchCollection("products");
 export const saveProduct = async (product: any) => {
   const ref = doc(db, "products", String(product.id));
-  await setDoc(ref, product, { merge: true });
+  await setDoc(ref, cleanPayload(product), { merge: true });
 };
 export const deleteProduct = async (id: string | number) => {
   await deleteDoc(doc(db, "products", String(id)));
@@ -65,7 +71,7 @@ export const deleteProduct = async (id: string | number) => {
 export const fetchCategories = () => fetchCollection("categories");
 export const saveCategory = async (category: any) => {
   const ref = doc(db, "categories", String(category.id));
-  await setDoc(ref, category, { merge: true });
+  await setDoc(ref, cleanPayload(category), { merge: true });
 };
 export const deleteCategory = async (id: string | number) => {
   await deleteDoc(doc(db, "categories", String(id)));
@@ -74,7 +80,7 @@ export const deleteCategory = async (id: string | number) => {
 export const fetchOrders = () => fetchCollection("orders");
 export const createOrder = async (order: any) => {
   const ref = doc(db, "orders", String(order.id));
-  await setDoc(ref, order, { merge: true });
+  await setDoc(ref, cleanPayload(order), { merge: true });
 };
 export const deleteOrder = async (id: string | number) => {
   await deleteDoc(doc(db, "orders", String(id)));
@@ -102,9 +108,14 @@ export const fetchSettings = async () => {
   return defaultSettings;
 };
 
+// Generic save document function using setDoc with merge to avoid 'document missing' rejections
+export const saveSettingsDoc = async (documentId: string, settings: any) => {
+  const ref = doc(db, "settings", documentId);
+  await setDoc(ref, cleanPayload(settings), { merge: true });
+};
+
 export const saveSettings = async (settings: any) => {
-  const ref = doc(db, "settings", "global");
-  await setDoc(ref, settings, { merge: true });
+  await saveSettingsDoc("global", settings);
 };
 
 export const uploadDeviceImage = async (file: File): Promise<string> => {

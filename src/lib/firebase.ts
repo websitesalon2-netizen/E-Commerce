@@ -43,9 +43,9 @@ export const isFirebaseConfigured = () => Boolean(firebaseConfig.apiKey);
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
 
-// Helper to sanitize payload and remove undefined values before saving to Firestore
+// Helper to strip undefined values before Firestore writes
 const cleanPayload = (data: any) => {
-  if (!data || typeof data !== "object") return {};
+  if (data === null || data === undefined) return {};
   return JSON.parse(JSON.stringify(data));
 };
 
@@ -85,40 +85,33 @@ export const createOrder = async (order: any) => {
 export const deleteOrder = async (id: string | number) => {
   await deleteDoc(doc(db, "orders", String(id)));
 };
-export const updateOrderStatus = async (id: string | number, status: string) => {
+export const updateOrderStatus = async (id: string | number, status: string, notes?: string) => {
   const ref = doc(db, "orders", String(id));
-  await updateDoc(ref, { status });
+  await setDoc(ref, cleanPayload({ status, notes, updatedAt: new Date().toISOString() }), { merge: true });
 };
 
-export const fetchSettings = async () => {
+// Generic Document Fetcher for Settings
+export const fetchSettings = async <T = any>(key: string, fallback: T): Promise<T> => {
   try {
+    const docRef = doc(db, "settings", key);
     const snapshot = await getDocs(collection(db, "settings"));
-    if (!snapshot.empty) {
-      const data = snapshot.docs[0].data();
-      return {
-        ...defaultSettings,
-        ...data,
-        hours: { ...defaultSettings.hours, ...(data.hours || {}) },
-        timing: { ...defaultSettings.timing, ...(data.timing || {}) }
-      };
+    const match = snapshot.docs.find(d => d.id === key);
+    if (match && match.exists()) {
+      return { ...fallback, ...match.data() };
     }
   } catch (e) {
-    console.error("Error fetching settings:", e);
+    console.error(`Error fetching settings for key "${key}":`, e);
   }
-  return defaultSettings;
+  return fallback;
 };
 
-// Generic save document function using setDoc with merge to avoid 'document missing' rejections
-export const saveSettingsDoc = async (documentId: string, settings: any) => {
-  const ref = doc(db, "settings", documentId);
+// Generic Document Saver for Settings
+export const saveSettings = async (key: string, settings: any) => {
+  const ref = doc(db, "settings", key);
   await setDoc(ref, cleanPayload(settings), { merge: true });
 };
 
-export const saveSettings = async (settings: any) => {
-  await saveSettingsDoc("global", settings);
-};
-
-export const uploadDeviceImage = async (file: File): Promise<string> => {
+export const uploadDeviceImage = async (file: File, folder?: string, onProgress?: (p: number) => void): Promise<string> => {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onloadend = () => {

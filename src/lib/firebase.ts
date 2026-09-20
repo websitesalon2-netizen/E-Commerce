@@ -1,11 +1,15 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { 
+  getFirestore, 
+  collection, 
+  getDocs, 
+  doc, 
+  setDoc, 
+  deleteDoc, 
+  updateDoc 
+} from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your live web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBhA79wtQL8gj4SRMXlTkLAv8FR4sw0K9g",
   authDomain: "e-commerce-26f17.firebaseapp.com",
@@ -16,6 +20,84 @@ const firebaseConfig = {
   measurementId: "G-N5VXEQXSPF"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Check if credentials are properly configured
+export const isFirebaseConfigured = () => {
+  return Boolean(firebaseConfig.apiKey);
+};
+
+// Initialize Firebase & Firestore Database
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const db = getFirestore(app);
+
+// Helper to fetch entire collections from Firestore
+const fetchCollection = async (collectionName: string) => {
+  try {
+    const querySnapshot = await getDocs(collection(db, collectionName));
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error(`Error fetching ${collectionName}:`, error);
+    return [];
+  }
+};
+
+// --- PRODUCTS ---
+export const fetchProducts = () => fetchCollection("products");
+export const saveProduct = async (product: any) => {
+  const ref = doc(db, "products", String(product.id));
+  await setDoc(ref, product, { merge: true });
+};
+export const deleteProduct = async (id: string | number) => {
+  await deleteDoc(doc(db, "products", String(id)));
+};
+
+// --- CATEGORIES ---
+export const fetchCategories = () => fetchCollection("categories");
+export const saveCategory = async (category: any) => {
+  const ref = doc(db, "categories", String(category.id));
+  await setDoc(ref, category, { merge: true });
+};
+export const deleteCategory = async (id: string | number) => {
+  await deleteDoc(doc(db, "categories", String(id)));
+};
+
+// --- ORDERS ---
+export const fetchOrders = () => fetchCollection("orders");
+export const createOrder = async (order: any) => {
+  const ref = doc(db, "orders", String(order.id));
+  await setDoc(ref, order, { merge: true });
+};
+export const deleteOrder = async (id: string | number) => {
+  await deleteDoc(doc(db, "orders", String(id)));
+};
+export const updateOrderStatus = async (id: string | number, status: string) => {
+  const ref = doc(db, "orders", String(id));
+  await updateDoc(ref, { status });
+};
+
+// --- SETTINGS ---
+export const fetchSettings = async () => {
+  try {
+    const snapshot = await getDocs(collection(db, "settings"));
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data();
+    }
+  } catch (e) {
+    console.error("Error fetching settings:", e);
+  }
+  return null;
+};
+export const saveSettings = async (settings: any) => {
+  const ref = doc(db, "settings", "global");
+  await setDoc(ref, settings, { merge: true });
+};
+
+// --- IMAGE UPLOAD HELPER ---
+export const uploadDeviceImage = async (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  });
+};

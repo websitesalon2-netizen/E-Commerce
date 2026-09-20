@@ -38,61 +38,64 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full max-w-full bg-white border-b border-stone-200 shadow-sm">
+    <header className="sticky top-0 z-40 w-full max-w-full bg-white border-b border-stone-200 shadow-sm overflow-x-hidden">
       {/* Top Banner Bar */}
-      <div className="bg-stone-900 text-stone-200 text-xs py-2 px-4 w-full max-w-full">
+      <div className="bg-stone-900 text-stone-200 text-xs py-2 px-4 w-full">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1 text-center sm:text-left">
-          <div className="flex items-center gap-1.5 text-stone-300">
+          <div className="flex items-center gap-1.5 text-stone-300 truncate max-w-full">
             <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-            <span>{siteSettings?.address || 'Shalina, Budgam, J&K, India'}</span>
+            <span className="truncate">{siteSettings?.address || 'Shalina, Budgam, J&K, India'}</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-950 text-emerald-400 border border-emerald-800">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               Orders: OPEN
             </span>
             <span className="text-stone-400">
-              {businessHours?.openingTime || '09:30'} - {businessHours?.closingTime || '20:30'}
+              {businessHours?.openingTime || '09:00 AM'} - {businessHours?.closingTime || '09:00 PM'}
             </span>
           </div>
         </div>
       </div>
 
       {/* Main Navigation Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 md:h-20 gap-2 sm:gap-4 w-full">
           
-          {/* Brand Logo & Name */}
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => onNavigate('#/')}>
-            <div className="w-10 h-10 rounded-lg bg-amber-900 flex items-center justify-center text-amber-400 font-serif font-bold text-xl shadow-md">
+          {/* Brand Logo & Truncated Title */}
+          <div 
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer min-w-0 flex-1 sm:flex-initial"
+            onClick={() => onNavigate('#/')}
+          >
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-900 flex items-center justify-center text-amber-400 font-serif font-bold text-lg sm:text-xl shadow-md shrink-0">
               P
             </div>
-            <div>
-              <h1 className="font-serif text-lg md:text-xl font-bold text-stone-900 tracking-tight leading-none">
+            <div className="min-w-0 flex-1">
+              <h1 className="font-serif text-sm sm:text-base md:text-xl font-bold text-stone-900 tracking-tight leading-tight truncate">
                 {siteSettings?.storeName || 'Zenith Apparel & Footwear'}
               </h1>
-              <p className="text-[10px] tracking-widest text-stone-500 uppercase font-medium mt-0.5">
+              <p className="text-[9px] sm:text-[10px] tracking-widest text-stone-500 uppercase font-medium">
                 CLOTHING HOUSE
               </p>
             </div>
           </div>
 
-          {/* Search Bar (Desktop) */}
-          <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-1 max-w-md mx-6 relative">
+          {/* Search Bar (Desktop Only) */}
+          <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-1 max-w-xs lg:max-w-md mx-4 relative">
             <input
               type="text"
-              placeholder="Search pherans, shawls, suits..."
+              placeholder="Search pherans, shawls..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full bg-stone-100 text-stone-900 text-sm rounded-full pl-4 pr-10 py-2 border border-stone-200 focus:outline-none focus:border-amber-800 focus:ring-1 focus:ring-amber-800 transition-all"
+              className="w-full bg-stone-100 text-stone-900 text-sm rounded-full pl-4 pr-10 py-1.5 border border-stone-200 focus:outline-none focus:border-amber-800"
             />
-            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-amber-900">
+            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500">
               <Search className="w-4 h-4" />
             </button>
           </form>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-stone-700">
+          <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-stone-700 shrink-0">
             {navLinks.map((link) => (
               <button
                 key={link.route}
@@ -106,12 +109,12 @@ export const Header: React.FC<HeaderProps> = ({
             ))}
           </nav>
 
-          {/* Actions: Search, Cart Button, & 3-Line Mobile Menu Toggle */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Search Icon (Mobile) */}
+          {/* Action Buttons (ALWAYS VISIBLE & LOCKED IN PLACE) */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Search Button (Mobile) */}
             <button
               onClick={() => onNavigate('#/shop')}
-              className="md:hidden p-2 text-stone-700 hover:text-amber-900 hover:bg-stone-100 rounded-lg transition-colors"
+              className="md:hidden p-2 text-stone-700 hover:text-amber-900 rounded-lg"
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
@@ -120,41 +123,41 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Shopping Cart Button */}
             <button
               onClick={onOpenCart}
-              className="relative p-2 text-stone-700 hover:text-amber-900 hover:bg-stone-100 rounded-lg transition-colors"
+              className="relative p-2 text-stone-700 hover:text-amber-900 rounded-lg"
               aria-label="Cart"
             >
-              <ShoppingBag className="w-6 h-6" />
+              <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-amber-800 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-amber-800 text-white text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </button>
 
-            {/* 3-LINE HAMBURGER MENU BUTTON (ALWAYS VISIBLE ON MOBILE) */}
+            {/* 3-LINE MENU TOGGLE BUTTON (VISUALLY GUARANTEED ON MOBILE) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-stone-800 hover:text-amber-900 hover:bg-stone-100 rounded-lg transition-colors focus:outline-none"
-              aria-label="Toggle Navigation Menu"
+              className="lg:hidden p-2 text-stone-900 hover:bg-stone-100 rounded-lg shrink-0 border border-stone-200 ml-1"
+              aria-label="Menu"
             >
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6 text-stone-900" />
+                <X className="w-6 h-6 text-amber-900" />
               ) : (
                 <Menu className="w-6 h-6 text-stone-900" />
               )}
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Slide-down Menu Drawer */}
+      {/* Mobile Drawer Navigation */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-stone-200 bg-white px-4 pt-3 pb-6 shadow-xl w-full max-w-full">
-          {/* Mobile Search Input */}
+        <div className="lg:hidden border-t border-stone-200 bg-white px-4 pt-3 pb-6 shadow-2xl w-full">
           <form onSubmit={handleSearchSubmit} className="mb-4 relative">
             <input
               type="text"
-              placeholder="Search items..."
+              placeholder="Search products..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full bg-stone-100 text-stone-900 text-sm rounded-lg pl-3 pr-10 py-2 border border-stone-200"
@@ -164,7 +167,6 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </form>
 
-          {/* Navigation Links */}
           <div className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <button

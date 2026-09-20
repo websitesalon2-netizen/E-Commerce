@@ -9,7 +9,6 @@ import {
   updateDoc 
 } from "firebase/firestore";
 
-// Your live web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBhA79wtQL8gj4SRMXlTkLAv8FR4sw0K9g",
   authDomain: "e-commerce-26f17.firebaseapp.com",
@@ -20,8 +19,7 @@ const firebaseConfig = {
   measurementId: "G-N5VXEQXSPF"
 };
 
-// Complete fallback settings structure matching all UI requirements
-const defaultSettings = {
+export const defaultSettings = {
   storeName: "Zenith Apparel & Footwear — Shalina",
   phone: "+91-9622229622",
   whatsapp: "+91-9622229622",
@@ -30,22 +28,21 @@ const defaultSettings = {
   openingTime: "09:00 AM",
   closingTime: "09:00 PM",
   businessHours: "9:00 AM - 9:00 PM",
+  hours: {
+    openingTime: "09:00 AM",
+    closingTime: "09:00 PM"
+  },
   timing: {
     openingTime: "09:00 AM",
     closingTime: "09:00 PM"
   }
 };
 
-// Check if credentials are properly configured
-export const isFirebaseConfigured = () => {
-  return Boolean(firebaseConfig.apiKey);
-};
+export const isFirebaseConfigured = () => Boolean(firebaseConfig.apiKey);
 
-// Initialize Firebase & Firestore Database
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
 
-// Helper to fetch entire collections safely from Firestore
 const fetchCollection = async (collectionName: string) => {
   try {
     const querySnapshot = await getDocs(collection(db, collectionName));
@@ -56,7 +53,6 @@ const fetchCollection = async (collectionName: string) => {
   }
 };
 
-// --- PRODUCTS ---
 export const fetchProducts = () => fetchCollection("products");
 export const saveProduct = async (product: any) => {
   const ref = doc(db, "products", String(product.id));
@@ -66,7 +62,6 @@ export const deleteProduct = async (id: string | number) => {
   await deleteDoc(doc(db, "products", String(id)));
 };
 
-// --- CATEGORIES ---
 export const fetchCategories = () => fetchCollection("categories");
 export const saveCategory = async (category: any) => {
   const ref = doc(db, "categories", String(category.id));
@@ -76,7 +71,6 @@ export const deleteCategory = async (id: string | number) => {
   await deleteDoc(doc(db, "categories", String(id)));
 };
 
-// --- ORDERS ---
 export const fetchOrders = () => fetchCollection("orders");
 export const createOrder = async (order: any) => {
   const ref = doc(db, "orders", String(order.id));
@@ -90,20 +84,20 @@ export const updateOrderStatus = async (id: string | number, status: string) => 
   await updateDoc(ref, { status });
 };
 
-// --- SETTINGS ---
 export const fetchSettings = async () => {
   try {
     const snapshot = await getDocs(collection(db, "settings"));
     if (!snapshot.empty) {
-      const liveData = snapshot.docs[0].data();
-      return { 
-        ...defaultSettings, 
-        ...liveData,
-        timing: { ...defaultSettings.timing, ...(liveData.timing || {}) } 
+      const data = snapshot.docs[0].data();
+      return {
+        ...defaultSettings,
+        ...data,
+        hours: { ...defaultSettings.hours, ...(data.hours || {}) },
+        timing: { ...defaultSettings.timing, ...(data.timing || {}) }
       };
     }
   } catch (e) {
-    console.error("Error fetching settings from Firestore:", e);
+    console.error("Error fetching settings:", e);
   }
   return defaultSettings;
 };
@@ -113,7 +107,6 @@ export const saveSettings = async (settings: any) => {
   await setDoc(ref, settings, { merge: true });
 };
 
-// --- IMAGE UPLOAD HELPER ---
 export const uploadDeviceImage = async (file: File): Promise<string> => {
   return new Promise((resolve) => {
     const reader = new FileReader();

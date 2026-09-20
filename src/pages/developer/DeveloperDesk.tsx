@@ -12,33 +12,19 @@ import {
 } from 'lucide-react';
 
 export const DeveloperDesk: React.FC = () => {
-  const { 
-    siteSettings, 
-    contactSettings, 
-    businessHours, 
-    themeSettings, 
-    websiteContent,
-    updateSiteSettings, 
-    updateContactSettings, 
-    updateBusinessHours, 
-    updateThemeSettings, 
-    updateWebsiteContent,
-    uploadImage,
-    currentUserRole,
-    loginDeveloper
-  } = useStore();
+  const store = useStore();
 
   const [devPassword, setDevPassword] = useState('');
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
 
-  // Dynamic Form States
-  const [siteForm, setSiteForm] = useState({ ...siteSettings });
-  const [contactForm, setContactForm] = useState({ ...contactSettings });
-  const [hoursForm, setHoursForm] = useState({ ...businessHours });
-  const [themeForm, setThemeForm] = useState({ ...themeSettings });
-  const [contentForm, setContentForm] = useState({ ...websiteContent });
+  // Dynamic Form States with fallbacks
+  const [siteForm, setSiteForm] = useState({ ...(store.siteSettings || {}) });
+  const [contactForm, setContactForm] = useState({ ...(store.contactSettings || {}) });
+  const [hoursForm, setHoursForm] = useState({ ...(store.businessHours || {}) });
+  const [themeForm, setThemeForm] = useState({ ...(store.themeSettings || {}) });
+  const [contentForm, setContentForm] = useState({ ...(store.websiteContent || {}) });
 
-  if (currentUserRole !== 'developer') {
+  if (store.currentUserRole !== 'developer') {
     return (
       <div className="min-h-[70vh] flex items-center justify-center bg-stone-100 px-4 py-12">
         <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-stone-200 text-center">
@@ -49,7 +35,7 @@ export const DeveloperDesk: React.FC = () => {
           <p className="text-stone-600 text-sm mb-6">Enter system key to unlock full site customization settings.</p>
           <form onSubmit={(e) => {
             e.preventDefault();
-            if (!loginDeveloper(devPassword)) {
+            if (store.loginDeveloper && !store.loginDeveloper(devPassword)) {
               alert('Invalid Developer Access Key!');
             }
           }}>
@@ -76,32 +62,36 @@ export const DeveloperDesk: React.FC = () => {
     try {
       setSaveStatus('Saving changes...');
 
-      // Helper function to strip out undefined values that trigger Firestore write failures
-      const cleanObject = (obj: any) => {
+      // Helper to strip undefined values so Firestore calls never crash
+      const sanitize = (obj: any) => {
         if (!obj) return {};
-        return JSON.parse(
-          JSON.stringify(obj, (key, value) => (value === undefined ? '' : value))
-        );
+        const clean: any = {};
+        Object.keys(obj).forEach((key) => {
+          if (obj[key] !== undefined) {
+            clean[key] = obj[key];
+          }
+        });
+        return clean;
       };
 
-      // Safely update all Firestore setting collections
-      const results = await Promise.allSettled([
-        updateSiteSettings(cleanObject(siteForm)),
-        updateContactSettings(cleanObject(contactForm)),
-        updateBusinessHours(cleanObject(hoursForm)),
-        updateThemeSettings(cleanObject(themeForm)),
-        updateWebsiteContent(cleanObject(contentForm))
-      ]);
+      const tasks: Promise<any>[] = [];
 
-      const rejected = results.filter(r => r.status === 'rejected');
+      if (store.updateSiteSettings) tasks.push(store.updateSiteSettings(sanitize(siteForm)));
+      if (store.updateContactSettings) tasks.push(store.updateContactSettings(sanitize(contactForm)));
+      if (store.updateBusinessHours) tasks.push(store.updateBusinessHours(sanitize(hoursForm)));
+      if (store.updateThemeSettings) tasks.push(store.updateThemeSettings(sanitize(themeForm)));
+      if (store.updateWebsiteContent) tasks.push(store.updateWebsiteContent(sanitize(contentForm)));
 
-      if (rejected.length > 0) {
-        console.error('Failed Firestore updates:', rejected);
-        setSaveStatus('Failed to save settings. Check browser console for errors.');
+      const results = await Promise.allSettled(tasks);
+      const failures = results.filter((r) => r.status === 'rejected');
+
+      if (failures.length > 0) {
+        console.error('Firestore save rejections:', failures);
+        setSaveStatus('Failed to save some settings. Check browser console.');
         return;
       }
 
-      // Dynamically update favicon in browser DOM
+      // Dynamic favicon update in browser DOM
       if (siteForm.faviconUrl) {
         let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
         if (!link) {
@@ -122,10 +112,10 @@ export const DeveloperDesk: React.FC = () => {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'logoUrl' | 'faviconUrl') => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !store.uploadImage) return;
 
     try {
-      const url = await uploadImage(file, 'branding');
+      const url = await store.uploadImage(file, 'branding');
       setSiteForm(prev => ({ ...prev, [field]: url }));
     } catch (err) {
       alert('Failed to upload image.');
@@ -135,7 +125,7 @@ export const DeveloperDesk: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       
-      {/* Header Bar */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-stone-200 mb-8">
         <div>
           <div className="flex items-center gap-2">
@@ -311,7 +301,7 @@ export const DeveloperDesk: React.FC = () => {
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2 border-b border-stone-100 pb-3">
             <Palette className="w-5 h-5 text-amber-800" />
-            4. Footer Credits & Theme CSS
+            4. Footer Credits & Custom CSS
           </h2>
 
           <div>

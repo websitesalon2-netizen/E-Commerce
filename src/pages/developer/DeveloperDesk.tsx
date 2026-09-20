@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStore } from '../../context/StoreContext'; // Adjust path if needed
+import { useStore } from '../../context/StoreContext';
 import { 
   Globe, 
   MapPin, 
@@ -46,11 +46,11 @@ export const DeveloperDesk: React.FC = () => {
             <Code className="w-8 h-8" />
           </div>
           <h2 className="text-2xl font-serif font-bold text-stone-900 mb-2">Developer Desk</h2>
-          <p className="text-stone-600 text-sm mb-6">Enter system key to unlock site customization settings.</p>
+          <p className="text-stone-600 text-sm mb-6">Enter system key to unlock full site customization settings.</p>
           <form onSubmit={(e) => {
             e.preventDefault();
             if (!loginDeveloper(devPassword)) {
-              alert('Invalid Developer Key!');
+              alert('Invalid Developer Access Key!');
             }
           }}>
             <input 
@@ -75,14 +75,33 @@ export const DeveloperDesk: React.FC = () => {
   const handleSaveAll = async () => {
     try {
       setSaveStatus('Saving changes...');
-      await Promise.all([
-        updateSiteSettings(siteForm),
-        updateContactSettings(contactForm),
-        updateBusinessHours(hoursForm),
-        updateThemeSettings(themeForm),
-        updateWebsiteContent(contentForm)
+
+      // Helper function to strip out undefined values that trigger Firestore write failures
+      const cleanObject = (obj: any) => {
+        if (!obj) return {};
+        return JSON.parse(
+          JSON.stringify(obj, (key, value) => (value === undefined ? '' : value))
+        );
+      };
+
+      // Safely update all Firestore setting collections
+      const results = await Promise.allSettled([
+        updateSiteSettings(cleanObject(siteForm)),
+        updateContactSettings(cleanObject(contactForm)),
+        updateBusinessHours(cleanObject(hoursForm)),
+        updateThemeSettings(cleanObject(themeForm)),
+        updateWebsiteContent(cleanObject(contentForm))
       ]);
 
+      const rejected = results.filter(r => r.status === 'rejected');
+
+      if (rejected.length > 0) {
+        console.error('Failed Firestore updates:', rejected);
+        setSaveStatus('Failed to save settings. Check browser console for errors.');
+        return;
+      }
+
+      // Dynamically update favicon in browser DOM
       if (siteForm.faviconUrl) {
         let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
         if (!link) {
@@ -96,6 +115,7 @@ export const DeveloperDesk: React.FC = () => {
       setSaveStatus('All site configurations saved successfully!');
       setTimeout(() => setSaveStatus(null), 4000);
     } catch (err) {
+      console.error('Developer Desk Save Error:', err);
       setSaveStatus('Failed to save settings.');
     }
   };
@@ -114,6 +134,8 @@ export const DeveloperDesk: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      {/* Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-stone-200 mb-8">
         <div>
           <div className="flex items-center gap-2">
@@ -136,13 +158,14 @@ export const DeveloperDesk: React.FC = () => {
         <div className={`p-4 rounded-xl mb-6 flex items-center gap-2 text-sm font-medium ${
           saveStatus.includes('successfully') ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-900 border border-amber-200'
         }`}>
-          {saveStatus.includes('successfully') ? <CheckCircle className="w-5 h-5 text-emerald-600" /> : <AlertCircle className="w-5 h-5 text-amber-600 animate-spin" />}
+          {saveStatus.includes('successfully') ? <CheckCircle className="w-5 h-5 text-emerald-600" /> : <AlertCircle className="w-5 h-5 text-amber-600" />}
           {saveStatus}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Identity Section */}
+        
+        {/* Section 1: Store Identity */}
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2 border-b border-stone-100 pb-3">
             <Globe className="w-5 h-5 text-amber-800" />
@@ -153,24 +176,24 @@ export const DeveloperDesk: React.FC = () => {
             <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">Store Name</label>
             <input 
               type="text" 
-              value={siteForm.storeName || ''} 
-              onChange={e => setSiteForm({ ...siteForm, storeName: e.target.value })}
+              value={siteForm.shopName || siteForm.storeName || ''} 
+              onChange={e => setSiteForm({ ...siteForm, shopName: e.target.value, storeName: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg text-sm"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">Store Subtitle / Tagline</label>
+            <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">Store Tagline / Subtitle</label>
             <input 
               type="text" 
-              value={siteForm.tagline || ''} 
-              onChange={e => setSiteForm({ ...siteForm, tagline: e.target.value })}
+              value={siteForm.subtitle || siteForm.tagline || ''} 
+              onChange={e => setSiteForm({ ...siteForm, subtitle: e.target.value, tagline: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg text-sm"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">Header Top Bar Announcement</label>
+            <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">Header Top Announcement Bar</label>
             <input 
               type="text" 
               value={siteForm.announcementText || ''} 
@@ -204,11 +227,11 @@ export const DeveloperDesk: React.FC = () => {
           </div>
         </div>
 
-        {/* Website Content Section */}
+        {/* Section 2: Website Text */}
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2 border-b border-stone-100 pb-3">
             <Sliders className="w-5 h-5 text-amber-800" />
-            2. Hero & About Copywriting
+            2. Hero & Copywriting Text
           </h2>
 
           <div>
@@ -232,29 +255,32 @@ export const DeveloperDesk: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">About Us Story</label>
+            <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">About Us Story Text</label>
             <textarea 
               rows={4}
-              value={contentForm.aboutStory || ''} 
-              onChange={e => setContentForm({ ...contentForm, aboutStory: e.target.value })}
+              value={contentForm.aboutText || contentForm.aboutStory || ''} 
+              onChange={e => setContentForm({ ...contentForm, aboutText: e.target.value, aboutStory: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg text-sm"
             />
           </div>
         </div>
 
-        {/* Address & Contact Details */}
+        {/* Section 3: Address & Contact */}
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2 border-b border-stone-100 pb-3">
             <MapPin className="w-5 h-5 text-amber-800" />
-            3. Address & Contact
+            3. Address & Contact Details
           </h2>
 
           <div>
             <label className="block text-xs font-semibold uppercase text-stone-600 mb-1">Physical Address</label>
             <input 
               type="text" 
-              value={siteForm.address || ''} 
-              onChange={e => setSiteForm({ ...siteForm, address: e.target.value })}
+              value={contactForm.address || siteForm.address || ''} 
+              onChange={e => {
+                setContactForm({ ...contactForm, address: e.target.value });
+                setSiteForm({ ...siteForm, address: e.target.value });
+              }}
               className="w-full px-3 py-2 border rounded-lg text-sm"
             />
           </div>
@@ -281,11 +307,11 @@ export const DeveloperDesk: React.FC = () => {
           </div>
         </div>
 
-        {/* Developer Credit Section */}
+        {/* Section 4: Developer Credit & Colors */}
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2 border-b border-stone-100 pb-3">
             <Palette className="w-5 h-5 text-amber-800" />
-            4. Footer Credits & Theme
+            4. Footer Credits & Theme CSS
           </h2>
 
           <div>
@@ -305,11 +331,23 @@ export const DeveloperDesk: React.FC = () => {
               value={siteForm.customCss || ''} 
               onChange={e => setSiteForm({ ...siteForm, customCss: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg text-xs font-mono bg-stone-900 text-emerald-400"
-              placeholder="/* Enter raw CSS overrides here */"
+              placeholder="/* Enter raw CSS rules here */"
             />
           </div>
         </div>
+
       </div>
+
+      <div className="mt-8 flex justify-end">
+        <button
+          onClick={handleSaveAll}
+          className="flex items-center justify-center gap-2 bg-amber-900 hover:bg-amber-800 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition-colors"
+        >
+          <Save className="w-5 h-5" />
+          Save Global Changes
+        </button>
+      </div>
+
     </div>
   );
 };
